@@ -81,14 +81,6 @@ const Footer: React.FC = () => {
                 <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">
                   +254 725604549
                 </a>
-                <a
-                  href="https://wa.me/254725604549"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-3 text-emerald-400 hover:text-emerald-200 transition-colors animate-bounce-slow"
-                >
-                  WhatsApp
-                </a>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5 text-emerald-500" />
@@ -167,12 +159,7 @@ const Footer: React.FC = () => {
           <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
             <Twitter className="w-5 h-5" />
           </a>
-          <a
-            href="https://wa.me/254725604549"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors animate-bounce-slow"
-          >
+          <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
             <Instagram className="w-5 h-5" />
           </a>
           <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
