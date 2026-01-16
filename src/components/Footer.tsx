@@ -25,12 +25,12 @@ const Footer: React.FC = () => {
       {/* Newsletter Section */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 text-center md:text-left">
             <div>
               <h3 className="text-2xl font-bold mb-2">Get New Listings in Your Inbox</h3>
               <p className="text-emerald-100">Subscribe to receive the latest properties and market insights.</p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex w-full md:w-auto gap-3">
+            <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row items-center w-full md:w-auto gap-3">
               <div className="relative flex-1 md:w-80">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
               </div>
               <button
                 type="submit"
-                className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2"
+                className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2 mt-3 md:mt-0"
               >
                 {subscribed ? 'Subscribed!' : 'Subscribe'}
                 <Send className="w-4 h-4" />
@@ -58,33 +58,14 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
 
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+          {/* Brand (Logo + Name Only, Centered) */}
+          <div className="col-span-2 md:col-span-3 lg:col-span-2 flex flex-col items-center text-center">
+            <div className="flex items-center gap-2 mb-4 justify-center">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
                 <Home className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold">Kenya<span className="text-emerald-400">Homes</span></h2>
-              </div>
-            </div>
-            <p className="text-gray-400 mb-6 max-w-sm">
-              Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
-            </p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-gray-400">
-                <MapPin className="w-5 h-5 text-emerald-500" />
-                <span>Westlands, Nairobi, Kenya</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone className="w-5 h-5 text-emerald-500" />
-                <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">
-                  +254 725604549
-                </a>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Mail className="w-5 h-5 text-emerald-500" />
-                <span>info@kenyahomes.co.ke</span>
               </div>
             </div>
           </div>
@@ -134,19 +115,25 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Resources */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Resources</h4>
-            <ul className="space-y-3">
-              {resources.map((resource) => (
-                <li key={resource}>
-                  <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {resource}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Contact Info (Last Column) */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
+            <div className="space-y-3 text-gray-400">
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <MapPin className="w-5 h-5 text-emerald-500" />
+                <span>Westlands, Nairobi, Kenya</span>
+              </div>
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <Phone className="w-5 h-5 text-emerald-500" />
+                <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">
+                  +254 725604549
+                </a>
+              </div>
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <Mail className="w-5 h-5 text-emerald-500" />
+                <span>info@kenyahomes.co.ke</span>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -166,7 +153,6 @@ const Footer: React.FC = () => {
             <Linkedin className="w-5 h-5" />
           </a>
         </div>
-
       </div>
 
       {/* Bottom Bar */}
