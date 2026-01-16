@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
 
-          {/* Brand (Logo + Name Only, Centered) */}
+          {/* Brand (Logo + Name + Description, Centered) */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2 flex flex-col items-center text-center">
             <div className="flex items-center gap-2 mb-4 justify-center">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
@@ -68,6 +68,9 @@ const Footer: React.FC = () => {
                 <h2 className="text-xl font-bold">Kenya<span className="text-emerald-400">Homes</span></h2>
               </div>
             </div>
+            <p className="text-gray-400 mb-6 max-w-sm">
+              Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
+            </p>
           </div>
 
           {/* Property Types */}
