@@ -115,6 +115,21 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Resources */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Resources</h4>
+            <ul className="space-y-3">
+              {resources.map((resource) => (
+                <li key={resource}>
+                  <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                    {resource}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Contact Info (Last Column) */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
