@@ -95,22 +95,6 @@ const Footer: React.FC = () => {
                 <span>info@kenyahomes.co.ke</span>
               </div>
             </div>
-
-            {/* Social Icons Centered */}
-            <div className="flex justify-center gap-4 mt-6">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* Property Types */}
@@ -174,6 +158,23 @@ const Footer: React.FC = () => {
           </div>
 
         </div>
+
+        {/* Social Icons Truly Centered */}
+        <div className="flex justify-center gap-4 mt-10">
+          <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+            <Facebook className="w-5 h-5" />
+          </a>
+          <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+            <Twitter className="w-5 h-5" />
+          </a>
+          <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+            <Instagram className="w-5 h-5" />
+          </a>
+          <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+            <Linkedin className="w-5 h-5" />
+          </a>
+        </div>
+
       </div>
 
       {/* Bottom Bar */}
