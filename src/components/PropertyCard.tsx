@@ -106,4 +106,5 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onFavorite, isFav
     </div>
   );
 };
+
 export default PropertyCard;
