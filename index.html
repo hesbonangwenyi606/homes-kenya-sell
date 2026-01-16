@@ -1,24 +1,32 @@
+import { Whatsapp } from 'lucide-react'; // Add this to your imports
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kenya House Marketplace</title>
-    <meta name="description" content="A platform for buying and selling houses across Kenya." />
-    <link rel="icon" type="image/svg+xml" href="/" />
+// ...
 
-    <meta property="og:title" content="Kenya House Marketplace" />
-    <meta property="og:description" content="A platform for buying and selling houses across Kenya." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og.jpg" />
+<div className="space-y-3">
+  <div className="flex items-center gap-3 text-gray-400">
+    <MapPin className="w-5 h-5 text-emerald-500" />
+    <span>Westlands, Nairobi, Kenya</span>
+  </div>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/og.jpg" />
-  </head>
+  <div className="flex items-center gap-3 text-gray-400">
+    <Phone className="w-5 h-5 text-emerald-500" />
+    <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">
+      +254 725604549
+    </a>
+    
+    {/* WhatsApp icon bouncing */}
+    <a
+      href="https://wa.me/254725604549"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="ml-3 text-green-500 hover:text-green-400 transition-colors animate-bounce"
+    >
+      <Whatsapp className="w-6 h-6" />
+    </a>
+  </div>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+  <div className="flex items-center gap-3 text-gray-400">
+    <Mail className="w-5 h-5 text-emerald-500" />
+    <span>info@kenyahomes.co.ke</span>
+  </div>
+</div>
