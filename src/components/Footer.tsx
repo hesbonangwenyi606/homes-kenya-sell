@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Home, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight, Whatsapp } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -74,26 +74,29 @@ const Footer: React.FC = () => {
                 <MapPin className="w-5 h-5 text-emerald-500" />
                 <span>Westlands, Nairobi, Kenya</span>
               </div>
+
+              {/* Phone + WhatsApp */}
               <div className="flex items-center gap-3 text-gray-400">
                 <Phone className="w-5 h-5 text-emerald-500" />
                 <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">
                   +254 725604549
                 </a>
-                {/* Optional WhatsApp link */}
                 <a
                   href="https://wa.me/254725604549"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-3 text-emerald-400 hover:text-emerald-200 transition-colors text-sm"
+                  className="ml-3 text-green-500 hover:text-green-400 transition-colors animate-bounce"
                 >
-                  WhatsApp
+                  <Whatsapp className="w-6 h-6" />
                 </a>
               </div>
+
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5 text-emerald-500" />
                 <span>info@kenyahomes.co.ke</span>
               </div>
             </div>
+
             <div className="flex gap-4 mt-6">
               <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5" />
