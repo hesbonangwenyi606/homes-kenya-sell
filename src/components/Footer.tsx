@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Home, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Home, MapPin, Mail, Whatsapp, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) {
       setSubscribed(true);
@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {/* Brand */}
+          {/* Brand / Contact */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
@@ -69,20 +69,24 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 mb-6 max-w-sm">
               Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
             </p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-gray-400">
+
+            {/* Contact Info */}
+            <div className="space-y-3 text-gray-400">
+              <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-emerald-500" />
                 <span>Westlands, Nairobi, Kenya</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone className="w-5 h-5 text-emerald-500" />
-                <span>+254 700 123 456</span>
+              <div className="flex items-center gap-3">
+                <Whatsapp className="w-5 h-5 text-emerald-500 animate-bounce" />
+                <span>+254 725604549</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-400">
+              <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-emerald-500" />
                 <span>info@kenyahomes.co.ke</span>
               </div>
             </div>
+
+            {/* Social Icons */}
             <div className="flex gap-4 mt-6">
               <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5" />
@@ -163,16 +167,12 @@ const Footer: React.FC = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-400 text-sm">
-              © 2026 KenyaHomes. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm">
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</a>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-400 text-sm">© 2026 KenyaHomes. All rights reserved.</p>
+          <div className="flex gap-6 text-sm">
+            <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
+            <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</a>
+            <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</a>
           </div>
         </div>
       </div>
