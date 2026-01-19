@@ -7,9 +7,9 @@ import {
   Facebook,
   Instagram,
   Linkedin,
+  Twitter,
   Send,
-  ArrowRight,
-  X
+  ArrowRight
 } from 'lucide-react';
 
 const Footer: React.FC = () => {
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
                 className="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-xl font-semibold flex items-center gap-2"
               >
                 {subscribed ? 'Subscribed!' : 'Subscribe'}
-                <Send className="w-4 h-4" />
+                {!subscribed && <Send className="w-4 h-4" />}
               </button>
             </form>
           </div>
@@ -95,7 +95,8 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Lists */}
-          {[['Property Types', propertyTypes],
+          {[
+            ['Property Types', propertyTypes],
             ['Locations', locations],
             ['Quick Links', quickLinks],
             ['Resources', resources]
@@ -105,7 +106,10 @@ const Footer: React.FC = () => {
               <ul className="space-y-3">
                 {(items as string[]).map(item => (
                   <li key={item}>
-                    <a className="text-gray-400 hover:text-emerald-400 flex items-center gap-2 group" href="#">
+                    <a
+                      href="#"
+                      className="text-gray-400 hover:text-emerald-400 flex items-center gap-2 group"
+                    >
                       <ArrowRight className="w-4 h-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                       {item}
                     </a>
@@ -128,7 +132,9 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex gap-3">
                 <Mail className="text-emerald-500" />
-                info@kenyahomes.co.ke
+                <a href="mailto:info@kenyahomes.co.ke">
+                  info@kenyahomes.co.ke
+                </a>
               </div>
             </div>
           </div>
@@ -138,7 +144,7 @@ const Footer: React.FC = () => {
         {/* Socials */}
         <div className="flex justify-center gap-4 mt-10">
           <SocialIcon icon={<Facebook />} />
-          <SocialIcon icon={<X />} />
+          <SocialIcon icon={<Twitter />} />
           <SocialIcon icon={<Instagram />} />
           <SocialIcon icon={<Linkedin />} />
         </div>
@@ -153,7 +159,10 @@ const Footer: React.FC = () => {
 };
 
 const SocialIcon = ({ icon }: { icon: React.ReactNode }) => (
-  <a className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors" href="#">
+  <a
+    href="#"
+    className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+  >
     {icon}
   </a>
 );
