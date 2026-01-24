@@ -37,7 +37,6 @@ const Header: React.FC<HeaderProps> = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
 
-  // Persist Dark / Light Mode
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
@@ -96,16 +95,11 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
-            <a href="#" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+            <a href="#home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Home
             </a>
-
             <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
             <Dropdown title="Locations" items={locations} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-
-            <a href="#agents" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
-              Agents
-            </a>
             <a href="#calculator" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Mortgage Calculator
             </a>
@@ -116,7 +110,6 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            {/* Favorites */}
             <button onClick={onShowFavorites} className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
               <Heart className="w-6 h-6" />
               {favoritesCount > 0 && (
@@ -126,12 +119,10 @@ const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Dark/Light Mode Toggle */}
             <button onClick={toggleTheme} className="flex items-center gap-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 transition">
               {darkMode ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
-            {/* User Menu */}
             {user ? (
               <UserMenu user={user} getUserDisplayName={getUserDisplayName} getUserInitials={getUserInitials} showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onSignOut={onSignOut} />
             ) : (
@@ -141,11 +132,9 @@ const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Mobile Menu Button */}
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden p-2 text-gray-600 dark:text-gray-300">
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-
           </div>
         </div>
 
@@ -153,13 +142,12 @@ const Header: React.FC<HeaderProps> = ({
         {mobileMenuOpen && (
           <MobileMenu propertyTypes={propertyTypes} locations={locations} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
         )}
-
       </div>
     </header>
   );
 };
 
-// ------------------- User Menu Component -------------------
+// ------------------- UserMenu & Helpers (unchanged) -------------------
 const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, setShowUserMenu, favoritesCount, onShowFavorites, onShowInquiries, onSignOut }) => (
   <div className="relative">
     <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -192,7 +180,6 @@ const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, set
   </div>
 );
 
-// ------------------- User Menu Button -------------------
 const UserMenuButton = ({ icon: Icon, label, onClick, badge, textColor = 'text-gray-700 dark:text-gray-200', hoverColor = 'hover:bg-emerald-50 dark:hover:bg-emerald-900' }) => (
   <button onClick={onClick} className={`w-full flex items-center gap-3 px-4 py-2.5 ${textColor} ${hoverColor} transition-colors`}>
     <Icon className="w-4 h-4" />
@@ -226,20 +213,42 @@ const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => 
 // ------------------- Mobile Menu -------------------
 const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavorites, onShowInquiries, onShowAuth, onSignOut, closeMenu }) => {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const Accordion = ({ title, items, type }) => {
+    const isOpen = openSection === title;
+    return (
+      <div className="flex flex-col">
+        <button onClick={() => setOpenSection(isOpen ? null : title)} className="px-4 py-3 w-full text-left flex justify-between items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">
+          {title} <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isOpen && (
+          <div className="flex flex-col pl-6">
+            {items.map((item) => {
+              const Icon = type === 'icon' ? item.icon : null;
+              return (
+                <a key={item.name ?? item} href="#" onClick={closeMenu} className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2">
+                  {Icon && <Icon className="w-4 h-4" />} {item.name ?? item}
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="lg:hidden border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
       <nav className="flex flex-col gap-2">
-        <a href="#" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
-        <Accordion title="Properties" items={propertyTypes} openSection={openSection} setOpenSection={setOpenSection} closeMenu={closeMenu} type="icon" />
-        <Accordion title="Locations" items={locations} openSection={openSection} setOpenSection={setOpenSection} closeMenu={closeMenu} />
-        <a href="#agents" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Agents</a>
+        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
+        <Accordion title="Properties" items={propertyTypes} type="icon" />
+        <Accordion title="Locations" items={locations} />
         <a href="#calculator" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Mortgage Calculator</a>
         <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>
 
         {user ? (
           <>
-            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium flex items-center gap-2"><Heart className="w-4 h-4" /> Saved Properties</button>
-            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium flex items-center gap-2"><FileText className="w-4 h-4" /> My Inquiries</button>
+            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><Heart className="w-4 h-4" /> Saved Properties</button>
+            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><FileText className="w-4 h-4" /> My Inquiries</button>
             <button onClick={() => { onSignOut(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-medium"><LogOut className="w-4 h-4" /> Sign Out</button>
           </>
         ) : (
@@ -248,36 +257,6 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
           </button>
         )}
       </nav>
-
-      {/* Cities Covered */}
-      <div className="px-4 py-4 border-t border-gray-100 dark:border-gray-700 text-center">
-        <h3 className="text-gray-700 dark:text-gray-200 font-semibold text-sm uppercase">Cities Covered</h3>
-        <p className="text-emerald-600 dark:text-emerald-400 text-2xl font-bold mt-1">150+</p>
-      </div>
-    </div>
-  );
-};
-
-// ------------------- Mobile Accordion -------------------
-const Accordion = ({ title, items, openSection, setOpenSection, closeMenu, type }) => {
-  const isOpen = openSection === title;
-  return (
-    <div className="flex flex-col">
-      <button onClick={() => setOpenSection(isOpen ? null : title)} className="px-4 py-3 w-full text-left flex justify-between items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">
-        {title} <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isOpen && (
-        <div className="flex flex-col pl-6">
-          {items.map((item) => {
-            const Icon = type === 'icon' ? item.icon : null;
-            return (
-              <a key={item.name ?? item} onClick={closeMenu} href="#" className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2">
-                {Icon && <Icon className="w-4 h-4" />} {item.name ?? item}
-              </a>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 };
