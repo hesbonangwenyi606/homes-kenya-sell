@@ -24,6 +24,8 @@ interface HeaderProps {
   onSignOut: () => void;
 }
 
+const locationsList = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
+
 const Header: React.FC<HeaderProps> = ({
   favoritesCount,
   onShowFavorites,
@@ -59,8 +61,6 @@ const Header: React.FC<HeaderProps> = ({
     { name: 'Land', icon: MapPin },
     { name: 'Bungalows', icon: Home },
   ];
-
-  const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika', 'Malindi', 'Nyeri'];
 
   const getUserDisplayName = () => {
     if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
               Home
             </a>
             <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
-            <Dropdown title="Locations" items={locations} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+            <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
             <a href="#calculator" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Mortgage Calculator
             </a>
@@ -140,14 +140,36 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <MobileMenu propertyTypes={propertyTypes} locations={locations} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
+          <MobileMenu propertyTypes={propertyTypes} locations={locationsList} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
         )}
       </div>
     </header>
   );
 };
 
-// ------------------- UserMenu & Helpers (unchanged) -------------------
+// ------------------- Dropdown Component -------------------
+const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
+  <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
+    <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+      {title} <ChevronDown className="w-4 h-4" />
+    </button>
+    {activeDropdown === title && (
+      <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
+        {items.map((item) => {
+          const Icon = type === 'icon' ? item.icon : null;
+          return (
+            <a key={item.name ?? item} href="#" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              {Icon && <Icon className="w-4 h-4" />}
+              {item.name ?? item}
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+);
+
+// ------------------- User Menu -------------------
 const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, setShowUserMenu, favoritesCount, onShowFavorites, onShowInquiries, onSignOut }) => (
   <div className="relative">
     <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -188,31 +210,10 @@ const UserMenuButton = ({ icon: Icon, label, onClick, badge, textColor = 'text-g
   </button>
 );
 
-// ------------------- Dropdown Component -------------------
-const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
-  <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
-    <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
-      {title} <ChevronDown className="w-4 h-4" />
-    </button>
-    {activeDropdown === title && (
-      <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
-        {items.map((item) => {
-          const Icon = type === 'icon' ? item.icon : null;
-          return (
-            <a key={item.name ?? item} href="#" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-              {Icon && <Icon className="w-4 h-4" />}
-              {item.name ?? item}
-            </a>
-          );
-        })}
-      </div>
-    )}
-  </div>
-);
-
 // ------------------- Mobile Menu -------------------
 const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavorites, onShowInquiries, onShowAuth, onSignOut, closeMenu }) => {
   const [openSection, setOpenSection] = useState<string | null>(null);
+
   const Accordion = ({ title, items, type }) => {
     const isOpen = openSection === title;
     return (
