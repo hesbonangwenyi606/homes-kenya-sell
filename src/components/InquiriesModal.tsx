@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
   const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
   const phoneNumbers = ['0725604549', '0786604549'];
   const emailAddress = 'info@kenyahomes.co.ke';
-  const whatsappNumber = '254712345678'; // replace with your real WhatsApp number
+  const whatsappNumber = '254725604549'; // replace with your real WhatsApp number
 
   return (
     <footer className="bg-gray-900 text-white">
