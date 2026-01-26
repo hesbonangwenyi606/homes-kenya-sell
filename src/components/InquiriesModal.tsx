@@ -19,6 +19,8 @@ const Footer: React.FC = () => {
   const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
   const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
   const phoneNumbers = ['0725604549', '0786604549'];
+  const emailAddress = 'info@kenyahomes.co.ke';
+  const whatsappNumber = '254712345678'; // replace with your real WhatsApp number
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -70,6 +72,7 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 mb-6 max-w-sm">
               Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
             </p>
+            {/* Contact Section */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-400">
                 <MapPin className="w-5 h-5 text-emerald-500" />
@@ -84,11 +87,17 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Phone className="w-5 h-5 text-emerald-500" />
-                <span>{phoneNumbers.join(' | ')}</span>
+                {phoneNumbers.map((number, index) => (
+                  <a key={number} href={`tel:${number}`} className="hover:text-emerald-400 transition-colors">
+                    {number}{index < phoneNumbers.length - 1 ? ' | ' : ''}
+                  </a>
+                ))}
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5 text-emerald-500" />
-                <span>info@kenyahomes.co.ke</span>
+                <a href={`mailto:${emailAddress}`} className="hover:text-emerald-400 transition-colors">
+                  {emailAddress}
+                </a>
               </div>
             </div>
           </div>
@@ -164,7 +173,7 @@ const Footer: React.FC = () => {
           <Twitter className="w-5 h-5" />
         </a>
         <a
-          href="https://wa.me/254712345678"
+          href={`https://wa.me/${whatsappNumber}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
