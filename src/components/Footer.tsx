@@ -91,20 +91,6 @@ const Footer: React.FC = () => {
                 <span>info@kenyahomes.co.ke</span>
               </div>
             </div>
-            <div className="flex gap-4 mt-6">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* Property Types */}
@@ -169,8 +155,24 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
+      {/* Centered Social Icons Above Bottom Bar */}
+      <div className="flex justify-center gap-4 py-6 border-t border-gray-800">
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+          <Facebook className="w-5 h-5" />
+        </a>
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+          <Twitter className="w-5 h-5" />
+        </a>
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+          <Instagram className="w-5 h-5" />
+        </a>
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+          <Linkedin className="w-5 h-5" />
+        </a>
+      </div>
+
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm">
