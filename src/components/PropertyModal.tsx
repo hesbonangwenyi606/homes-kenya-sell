@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, MapPin, Bed, Bath, Square, Heart, Share2, Phone, Mail, MessageCircle, Calendar, Car, Trees, Shield, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, MapPin, Bed, Bath, Square, Heart, Share2, Phone, MessageCircle, Calendar, Car, Trees, Shield, CheckCircle, AlertCircle } from 'lucide-react';
 import { Property } from './PropertyCard';
 
 interface PropertyModalProps {
@@ -240,14 +240,14 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
                 )}
                 <div className="flex gap-2 mt-4">
                   <a
-                    href="tel:+254700123456"
+                    href="tel:0725604549"
                     className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                   >
                     <Phone className="w-4 h-4 text-emerald-600" />
                     <span className="text-sm font-medium">Call</span>
                   </a>
                   <a
-                    href="https://wa.me/254700123456"
+                    href="https://wa.me/254725604549"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors"

@@ -18,10 +18,47 @@ const Footer: React.FC = () => {
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
   const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
-  const phoneNumbers = ['0725604549', '0786604549'];
+  const phoneNumbers = ['0725604549'];
 
   return (
     <footer className="bg-gray-900 text-white">
+      {/* CTA Section */}
+      <div className="bg-emerald-600 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <h2 className="text-2xl font-bold">Ready to Find Your Dream Home?</h2>
+          <div className="flex gap-4">
+            {/* Call Us */}
+            <a
+              href="tel:+254725604549"
+              className="flex items-center gap-2 bg-white text-emerald-600 px-5 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+            >
+              <Phone className="w-5 h-5" /> Call Us
+            </a>
+
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/254725604549"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-white text-emerald-600 px-5 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.52 3.48a11.912 11.912 0 0 0-16.92 0c-4.69 4.69-4.69 12.3 0 16.99a11.88 11.88 0 0 0 16.92 0 11.88 11.88 0 0 0 0-16.99Zm-9.53 15.24c-1.71 0-3.41-.46-4.87-1.33l-3.25.85.88-3.21a8.98 8.98 0 0 1-1.33-4.85c0-4.99 4.07-9.06 9.06-9.06 2.42 0 4.7.94 6.42 2.66a9.048 9.048 0 0 1 2.65 6.41c0 4.99-4.07 9.06-9.06 9.06Zm5.02-6.55-1.46.74c-.19.09-.42.05-.55-.1l-.8-.82a.497.497 0 0 0-.51-.12c-.71.27-1.47.42-2.26.42a4.55 4.55 0 0 1-2.53-.82c-.69-.45-1.23-1.11-1.56-1.87-.24-.53-.14-1.15.24-1.6l.85-1.04c.13-.16.1-.38-.07-.51l-1.15-.85c-.15-.11-.37-.1-.5.03-1.01.97-1.57 2.3-1.57 3.69 0 2.71 2.23 4.94 4.94 4.94 1.16 0 2.29-.38 3.2-1.08.13-.11.14-.32.03-.46l-1.06-1.56Z"/>
+              </svg>
+              WhatsApp
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:info@kenyahomes.co.ke"
+              className="flex items-center gap-2 bg-white text-emerald-600 px-5 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+            >
+              <Mail className="w-5 h-5" /> Email
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Newsletter Section */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -37,7 +74,7 @@ const Footer: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder="info@home.com"
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   required
                 />
@@ -155,28 +192,35 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Centered Social Icons Above Horizontal Line */}
+      {/* Social & Contact Buttons */}
       <div className="flex justify-center gap-4 py-6">
-        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors" title="Facebook">
           <Facebook className="w-5 h-5" />
         </a>
-        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
+        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors" title="Twitter">
           <Twitter className="w-5 h-5" />
         </a>
         <a
-          href="https://wa.me/254712345678"
+          href="https://wa.me/254725604549"
           target="_blank"
           rel="noopener noreferrer"
           className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+          title="Chat on WhatsApp"
         >
-          {/* WhatsApp Icon */}
           <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20.52 3.48a11.912 11.912 0 0 0-16.92 0c-4.69 4.69-4.69 12.3 0 16.99a11.88 11.88 0 0 0 16.92 0 11.88 11.88 0 0 0 0-16.99Zm-9.53 15.24c-1.71 0-3.41-.46-4.87-1.33l-3.25.85.88-3.21a8.98 8.98 0 0 1-1.33-4.85c0-4.99 4.07-9.06 9.06-9.06 2.42 0 4.7.94 6.42 2.66a9.048 9.048 0 0 1 2.65 6.41c0 4.99-4.07 9.06-9.06 9.06Zm5.02-6.55-1.46.74c-.19.09-.42.05-.55-.1l-.8-.82a.497.497 0 0 0-.51-.12c-.71.27-1.47.42-2.26.42a4.55 4.55 0 0 1-2.53-.82c-.69-.45-1.23-1.11-1.56-1.87-.24-.53-.14-1.15.24-1.6l.85-1.04c.13-.16.1-.38-.07-.51l-1.15-.85c-.15-.11-.37-.1-.5.03-1.01.97-1.57 2.3-1.57 3.69 0 2.71 2.23 4.94 4.94 4.94 1.16 0 2.29-.38 3.2-1.08.13-.11.14-.32.03-.46l-1.06-1.56Z"/>
           </svg>
         </a>
+        <a
+          href="tel:+254725604549"
+          className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+          title="Call Us"
+        >
+          <Phone className="w-5 h-5 text-white" />
+        </a>
       </div>
 
-      {/* Bottom Bar with Horizontal Line Below Icons */}
+      {/* Bottom Bar */}
       <div className="border-t border-gray-800 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
