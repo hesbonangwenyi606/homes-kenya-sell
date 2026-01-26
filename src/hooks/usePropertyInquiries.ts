@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Property } from '@/components/PropertyCard';
-import { Agent } from '@/components/AgentCard';
 
 export interface PropertyInquiry {
   id: string;
