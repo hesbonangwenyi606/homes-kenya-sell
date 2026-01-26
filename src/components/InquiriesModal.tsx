@@ -16,11 +16,11 @@ const Footer: React.FC = () => {
 
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
-  const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
-  const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
+  const quickLinks = ['About Us', '', 'Blog', 'Careers', 'FAQs', 'Contact'];
+  const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips',];
   const phoneNumbers = ['0725604549', '0786604549'];
-  const emailAddress = 'info@kenyahomes.co.ke';
-  const whatsappNumber = '254725604549'; // replace with your real WhatsApp number
+  const emailAddress = 'hemaprinhomes@gmail.com';
+  const whatsappNumber = '254725604549'; 
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder="hemaprinhomes@gmail.com"
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   required
                 />
