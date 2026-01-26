@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
   };
 
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
-  const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika'];
+  const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
   const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
 
@@ -74,9 +74,13 @@ const Footer: React.FC = () => {
                 <MapPin className="w-5 h-5 text-emerald-500" />
                 <span>Westlands, Nairobi, Kenya</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone className="w-5 h-5 text-emerald-500" />
-                <span>+254 700 123 456</span>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-gray-400">
+                <a href="tel:+254725604549" className="flex items-center gap-2 bg-gray-800 hover:bg-emerald-600 px-3 py-2 rounded-lg transition-colors text-sm">
+                  <Phone className="w-4 h-4 text-emerald-500" /> 0725604549
+                </a>
+                <a href="tel:+254786604549" className="flex items-center gap-2 bg-gray-800 hover:bg-emerald-600 px-3 py-2 rounded-lg transition-colors text-sm">
+                  <Phone className="w-4 h-4 text-emerald-500" /> 0786604549
+                </a>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5 text-emerald-500" />

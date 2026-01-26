@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, MapPin, Clock, CheckCircle, AlertCircle, Phone, Mail } from 'lucide-react';
+import { X, FileText, MapPin, Clock, CheckCircle, Phone, Mail } from 'lucide-react';
 import { PropertyInquiry } from '@/hooks/usePropertyInquiries';
 
 interface InquiriesModalProps {
@@ -9,6 +9,8 @@ interface InquiriesModalProps {
 }
 
 const InquiriesModal: React.FC<InquiriesModalProps> = ({ inquiries, loading, onClose }) => {
+  const phoneNumbers = ['0725604549', '0786604549']; // Updated phone numbers
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-KE', {
@@ -76,7 +78,6 @@ const InquiriesModal: React.FC<InquiriesModalProps> = ({ inquiries, loading, onC
             </button>
           </div>
         </div>
-
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -139,14 +140,19 @@ const InquiriesModal: React.FC<InquiriesModalProps> = ({ inquiries, loading, onC
                     </div>
                   </div>
 
+                  {/* Updated Call & Email Buttons */}
                   <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
-                    <a
-                      href="tel:+254725 604 549"
-                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                    >
-                      <Phone className="w-4 h-4 text-emerald-600" />
-                      Follow Up
-                    </a>
+                    {phoneNumbers.map((num) => (
+                      <a
+                        key={num}
+                        href={`tel:+254${num.slice(1)}`}
+                        className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                      >
+                        <Phone className="w-4 h-4 text-emerald-600" />
+                        Call {num}
+                      </a>
+                    ))}
+
                     <a
                       href={`mailto:info@kenyahomes.co.ke?subject=Follow up on ${inquiry.property_title}`}
                       className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"

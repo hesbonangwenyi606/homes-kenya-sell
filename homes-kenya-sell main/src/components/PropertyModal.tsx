@@ -3,7 +3,7 @@ import { X, MapPin, Bed, Bath, Square, Heart, Share2, Phone, Mail, MessageCircle
 import { Property } from './PropertyCard';
 
 interface PropertyModalProps {
-  property: Property;
+  property: Property & { phoneNumbers: string[] }; // Added phoneNumbers here
   onClose: () => void;
   onFavorite: (property: Property) => void;
   isFavorite: boolean;
@@ -224,38 +224,35 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
                       disabled={submitting}
                       className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                      {submitting ? (
-                        <>
-                          <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Sending...
-                        </>
-                      ) : (
-                        'Send Inquiry'
-                      )}
+                      {submitting ? 'Sending...' : 'Send Inquiry'}
                     </button>
                   </form>
                 )}
-                <div className="flex gap-2 mt-4">
-                  <a
-                    href="tel:+254700123456"
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
-                  >
-                    <Phone className="w-4 h-4 text-emerald-600" />
-                    <span className="text-sm font-medium">Call</span>
-                  </a>
-                  <a
-                    href="https://wa.me/254700123456"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">WhatsApp</span>
-                  </a>
+
+                {/* Dynamic Call & WhatsApp buttons */}
+                <div className="flex flex-col gap-2 mt-4">
+                  {property.phoneNumbers.map((num) => (
+                    <div key={num} className="flex gap-2">
+                      <a
+                        href={`tel:${num}`}
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                      >
+                        <Phone className="w-4 h-4 text-emerald-600" />
+                        <span className="text-sm font-medium">Call {num}</span>
+                      </a>
+                      <a
+                        href={`https://wa.me/254${num.replace(/^0/, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span className="text-sm font-medium">WhatsApp {num}</span>
+                      </a>
+                    </div>
+                  ))}
                 </div>
+
               </div>
             </div>
           </div>

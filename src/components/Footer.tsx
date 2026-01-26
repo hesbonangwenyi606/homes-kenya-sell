@@ -15,9 +15,10 @@ const Footer: React.FC = () => {
   };
 
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
-  const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika'];
+  const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
   const resources = ['Mortgage Calculator', 'Property Guide', 'Market Insights', 'Legal Guide', 'Investment Tips', 'Moving Checklist'];
+  const phoneNumbers = ['0725604549', '0786604549'];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -72,11 +73,18 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-400">
                 <MapPin className="w-5 h-5 text-emerald-500" />
-                <span>Westlands, Nairobi, Kenya</span>
+                <a
+                  href="https://www.google.com/maps/search/Arcade+House,+Murang’a+Road+%26+Moi+Avenue,+Nairobi,+Kenya"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-emerald-400 transition-colors"
+                >
+                  Arcade House 1st Floor, Nairobi
+                </a>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Phone className="w-5 h-5 text-emerald-500" />
-                <span>+254 700 123 456</span>
+                <span>{phoneNumbers.join(' | ')}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-5 h-5 text-emerald-500" />

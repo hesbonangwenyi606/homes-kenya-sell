@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, MapPin, Clock, CheckCircle, AlertCircle, Phone, Mail } from 'lucide-react';
+import { X, FileText, MapPin, Clock, CheckCircle, Phone, Mail } from 'lucide-react';
 import { PropertyInquiry } from '@/hooks/usePropertyInquiries';
 
 interface InquiriesModalProps {
@@ -141,11 +141,18 @@ const InquiriesModal: React.FC<InquiriesModalProps> = ({ inquiries, loading, onC
 
                   <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
                     <a
-                      href="tel:+254700123456"
+                      href="tel:+254725604549"
                       className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
                     >
                       <Phone className="w-4 h-4 text-emerald-600" />
-                      Follow Up
+                      0725604549
+                    </a>
+                    <a
+                      href="tel:+254786604549"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      <Phone className="w-4 h-4 text-emerald-600" />
+                      0786604549
                     </a>
                     <a
                       href={`mailto:info@kenyahomes.co.ke?subject=Follow up on ${inquiry.property_title}`}

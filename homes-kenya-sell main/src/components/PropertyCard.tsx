@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Bed, Bath, Square, Heart } from 'lucide-react';
+import { MapPin, Bed, Bath, Square, Heart, Phone } from 'lucide-react';
 
 export interface Property {
   id: number;
@@ -31,17 +31,18 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onFavorite, isFav
 
   return (
     <div 
-      className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
+      className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group w-full sm:w-80"
       onClick={() => onClick(property)}
     >
       <div className="relative overflow-hidden">
         <img 
           src={property.image} 
           alt={property.title}
-          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${
+        {/* Property Type Badge */}
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${
             property.type === 'house' ? 'bg-emerald-500 text-white' :
             property.type === 'apartment' ? 'bg-blue-500 text-white' :
             property.type === 'land' ? 'bg-amber-500 text-white' :
@@ -50,58 +51,78 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onFavorite, isFav
             {property.type}
           </span>
         </div>
+        {/* Featured Badge */}
         {property.featured && (
-          <div className="absolute top-4 right-14">
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+          <div className="absolute top-3 right-12 sm:top-4 sm:right-14">
+            <span className="px-2 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-white">
               Featured
             </span>
           </div>
         )}
+        {/* Favorite Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onFavorite();
           }}
-          className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className={`absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
             isFavorite 
               ? 'bg-red-500 text-white' 
               : 'bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white'
           }`}
         >
-          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <p className="text-white text-2xl font-bold">{formatPrice(property.price)}</p>
+        {/* Price Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 sm:p-4">
+          <p className="text-white text-lg sm:text-2xl font-bold">{formatPrice(property.price)}</p>
         </div>
       </div>
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">{property.title}</h3>
-        <div className="flex items-center text-gray-500 mb-4">
-          <MapPin className="w-4 h-4 mr-1 text-emerald-600" />
-          <span className="text-sm">{property.location}</span>
+
+      {/* Card Body */}
+      <div className="p-3 sm:p-5">
+        <h3 className="text-md sm:text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 sm:mb-2 line-clamp-2">{property.title}</h3>
+        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2">
+          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 text-emerald-600" />
+          <span className="truncate">{property.location}</span>
         </div>
-        {property.type !== 'land' && (
-          <div className="flex items-center justify-between text-gray-600 border-t pt-4">
-            <div className="flex items-center">
-              <Bed className="w-4 h-4 mr-1 text-gray-400" />
-              <span className="text-sm">{property.bedrooms} Beds</span>
+
+        {/* Property Details */}
+        {property.type !== 'land' ? (
+          <div className="flex flex-wrap items-center justify-between text-gray-600 dark:text-gray-300 border-t pt-2 sm:pt-4 text-sm sm:text-base gap-2">
+            <div className="flex items-center gap-1">
+              <Bed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" /> {property.bedrooms} Beds
             </div>
-            <div className="flex items-center">
-              <Bath className="w-4 h-4 mr-1 text-gray-400" />
-              <span className="text-sm">{property.bathrooms} Baths</span>
+            <div className="flex items-center gap-1">
+              <Bath className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" /> {property.bathrooms} Baths
             </div>
-            <div className="flex items-center">
-              <Square className="w-4 h-4 mr-1 text-gray-400" />
-              <span className="text-sm">{property.sqft.toLocaleString()} sqft</span>
+            <div className="flex items-center gap-1">
+              <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" /> {property.sqft.toLocaleString()} sqft
             </div>
           </div>
-        )}
-        {property.type === 'land' && (
-          <div className="flex items-center text-gray-600 border-t pt-4">
-            <Square className="w-4 h-4 mr-1 text-gray-400" />
-            <span className="text-sm">{property.sqft.toLocaleString()} sqft plot</span>
+        ) : (
+          <div className="flex items-center text-gray-600 dark:text-gray-300 border-t pt-2 sm:pt-4 text-sm sm:text-base gap-1">
+            <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" /> {property.sqft.toLocaleString()} sqft plot
           </div>
         )}
+
+        {/* Contact Numbers */}
+        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
+          <a
+            href="tel:+254725604549"
+            className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          >
+            <Phone className="w-4 h-4 text-emerald-600" />
+            0725604549
+          </a>
+          <a
+            href="tel:+254786604549"
+            className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          >
+            <Phone className="w-4 h-4 text-emerald-600" />
+            0786604549
+          </a>
+        </div>
       </div>
     </div>
   );
