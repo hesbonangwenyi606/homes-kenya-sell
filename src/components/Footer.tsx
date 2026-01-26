@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Home, MapPin, Phone, Mail, Facebook, Twitter, Send, ArrowRight } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -155,24 +155,29 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Centered Social Icons Above Bottom Bar */}
-      <div className="flex justify-center gap-4 py-6 border-t border-gray-800">
+      {/* Centered Social Icons Above Horizontal Line */}
+      <div className="flex justify-center gap-4 py-6">
         <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
           <Facebook className="w-5 h-5" />
         </a>
         <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
           <Twitter className="w-5 h-5" />
         </a>
-        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-          <Instagram className="w-5 h-5" />
-        </a>
-        <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-          <Linkedin className="w-5 h-5" />
+        <a
+          href="https://wa.me/254712345678"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+        >
+          {/* WhatsApp Icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.52 3.48a11.912 11.912 0 0 0-16.92 0c-4.69 4.69-4.69 12.3 0 16.99a11.88 11.88 0 0 0 16.92 0 11.88 11.88 0 0 0 0-16.99Zm-9.53 15.24c-1.71 0-3.41-.46-4.87-1.33l-3.25.85.88-3.21a8.98 8.98 0 0 1-1.33-4.85c0-4.99 4.07-9.06 9.06-9.06 2.42 0 4.7.94 6.42 2.66a9.048 9.048 0 0 1 2.65 6.41c0 4.99-4.07 9.06-9.06 9.06Zm5.02-6.55-1.46.74c-.19.09-.42.05-.55-.1l-.8-.82a.497.497 0 0 0-.51-.12c-.71.27-1.47.42-2.26.42a4.55 4.55 0 0 1-2.53-.82c-.69-.45-1.23-1.11-1.56-1.87-.24-.53-.14-1.15.24-1.6l.85-1.04c.13-.16.1-.38-.07-.51l-1.15-.85c-.15-.11-.37-.1-.5.03-1.01.97-1.57 2.3-1.57 3.69 0 2.71 2.23 4.94 4.94 4.94 1.16 0 2.29-.38 3.2-1.08.13-.11.14-.32.03-.46l-1.06-1.56Z"/>
+          </svg>
         </a>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="bg-gray-900">
+      {/* Bottom Bar with Horizontal Line Below Icons */}
+      <div className="border-t border-gray-800 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm">
