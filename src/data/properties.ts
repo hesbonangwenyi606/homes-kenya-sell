@@ -4,7 +4,7 @@ export const properties: Property[] = [
   {
     id: 1,
     title: 'Modern Villa in Karen',
-    location: 'Karen, Nairobi',
+    location: 'Nairobi',
     price: 85000000,
     bedrooms: 5,
     bathrooms: 4,
@@ -16,7 +16,7 @@ export const properties: Property[] = [
   {
     id: 2,
     title: 'Luxury Apartment in Westlands',
-    location: 'Westlands, Nairobi',
+    location: 'Juja, Nairobi',
     price: 25000000,
     bedrooms: 3,
     bathrooms: 2,
@@ -28,7 +28,7 @@ export const properties: Property[] = [
   {
     id: 3,
     title: 'Beachfront Bungalow',
-    location: 'Nyali, Mombasa',
+    location: 'Limuru',
     price: 45000000,
     bedrooms: 4,
     bathrooms: 3,
@@ -39,8 +39,8 @@ export const properties: Property[] = [
   },
   {
     id: 4,
-    title: 'Prime Land in Kitengela',
-    location: 'Kitengela, Kajiado',
+    title: 'Prime Land in Thika',
+    location: 'Thika',
     price: 8500000,
     bedrooms: 0,
     bathrooms: 0,
@@ -51,7 +51,7 @@ export const properties: Property[] = [
   {
     id: 5,
     title: 'Executive Townhouse',
-    location: 'Kilimani, Nairobi',
+    location: 'Kiambu',
     price: 55000000,
     bedrooms: 4,
     bathrooms: 4,
@@ -62,7 +62,7 @@ export const properties: Property[] = [
   {
     id: 6,
     title: 'Studio Apartment',
-    location: 'Kileleshwa, Nairobi',
+    location: 'Ruiru, Nairobi',
     price: 8500000,
     bedrooms: 1,
     bathrooms: 1,
@@ -72,8 +72,8 @@ export const properties: Property[] = [
   },
   {
     id: 7,
-    title: 'Family Home in Runda',
-    location: 'Runda, Nairobi',
+    title: 'Family Home in Juja',
+    location: 'Juja, Nairobi',
     price: 120000000,
     bedrooms: 6,
     bathrooms: 5,
@@ -84,8 +84,8 @@ export const properties: Property[] = [
   },
   {
     id: 8,
-    title: 'Coastal Retreat',
-    location: 'Diani, Kwale',
+    title: 'Thika',
+    location: 'Thika',
     price: 35000000,
     bedrooms: 3,
     bathrooms: 2,
@@ -96,7 +96,7 @@ export const properties: Property[] = [
   {
     id: 9,
     title: 'Agricultural Land',
-    location: 'Naivasha, Nakuru',
+    location: 'Limuru',
     price: 15000000,
     bedrooms: 0,
     bathrooms: 0,
@@ -107,7 +107,7 @@ export const properties: Property[] = [
   {
     id: 10,
     title: 'Penthouse Suite',
-    location: 'Upper Hill, Nairobi',
+    location: 'Thika, Nairobi',
     price: 75000000,
     bedrooms: 4,
     bathrooms: 3,
@@ -117,8 +117,8 @@ export const properties: Property[] = [
   },
   {
     id: 11,
-    title: 'Maisonette in Lavington',
-    location: 'Lavington, Nairobi',
+    title: 'Maisonette in Limuru',
+    location: 'Limuru, Nairobi',
     price: 65000000,
     bedrooms: 5,
     bathrooms: 4,
@@ -128,8 +128,8 @@ export const properties: Property[] = [
   },
   {
     id: 12,
-    title: 'Lake View Cottage',
-    location: 'Kisumu, Kisumu',
+    title: 'Kiambu',
+    location: 'Kiambu',
     price: 28000000,
     bedrooms: 3,
     bathrooms: 2,
@@ -173,8 +173,8 @@ export const properties: Property[] = [
   },
   {
     id: 16,
-    title: 'Swahili Style Home',
-    location: 'Malindi, Kilifi',
+    title: 'Kiambu',
+    location: 'Kiambu',
     price: 38000000,
     bedrooms: 4,
     bathrooms: 3,
@@ -196,7 +196,7 @@ export const properties: Property[] = [
   {
     id: 18,
     title: 'Serviced Apartment',
-    location: 'CBD, Nairobi',
+    location: 'Thika',
     price: 18000000,
     bedrooms: 2,
     bathrooms: 2,
@@ -209,14 +209,11 @@ export const properties: Property[] = [
 export const locations = [
   'All Locations',
   'Nairobi',
-  'Mombasa',
-  'Kisumu',
-  'Nakuru',
-  'Eldoret',
-  'Thika',
-  'Malindi',
-  'Nyeri',
+  'Juja',
   'Kiambu',
+  'Ruiru',
+  'Thika',
+  'Limuru',
 ];
 
 export const priceRanges = [
