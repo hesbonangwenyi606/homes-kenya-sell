@@ -58,8 +58,8 @@ const AppLayout: React.FC = () => {
 
   // Quick Stats
   const stats = [
-    { label: 'Properties Listed', value: '2,500+' },
-    { label: 'Happy Clients', value: '1,200+' },
+    { label: 'Properties Listed', value: '500+' },
+    { label: 'Happy Clients', value: '900+' },
     { label: 'Cities Covered', value: '47' },
     { label: 'Expert Agents', value: '150+' },
   ];
@@ -257,7 +257,7 @@ const AppLayout: React.FC = () => {
         <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Home?</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
           <a href="tel:+254700123456" className="px-8 py-4 bg-emerald-600 text-white rounded-xl">Call Us</a>
-          <a href="https://wa.me/254700123456" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
+          <a href="https://wa.me/254 725 604 549" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
           <a href="mailto:info@kenyahomes.co.ke" className="px-8 py-4 bg-gray-100 text-gray-700 rounded-xl">Email</a>
         </div>
       </section>
