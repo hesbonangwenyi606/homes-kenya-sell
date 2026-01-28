@@ -3,12 +3,10 @@ import { MapPin } from 'lucide-react';
 
 export default function ContactInfo() {
   return (
-    <div className="space-y-3 p-4 bg-white rounded-lg shadow-md">
+    <div className="flex items-center gap-3 text-gray-400">
       {/* Location */}
-      <div className="flex items-center gap-3 text-gray-400">
-        <MapPin className="w-5 h-5 text-emerald-500" />
-        <span>Nairobi, Kenya</span>
-      </div>
+      <MapPin className="w-5 h-5 text-emerald-500" />
+      <span>Nairobi, Kenya</span>
     </div>
   );
 }
