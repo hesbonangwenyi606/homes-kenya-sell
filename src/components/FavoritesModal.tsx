@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Heart, MapPin, Bed, Bath, Square, Trash2 } from 'lucide-react';
+import { X, Heart, MapPin, Bed, Bath, Square, Trash2, Tag, Home, Grid, Building } from 'lucide-react';
 import { Property } from './PropertyCard';
 import { SavedProperty } from '@/hooks/useSavedProperties';
 
@@ -40,6 +40,35 @@ const FavoritesModal: React.FC<FavoritesModalProps> = ({
     bathrooms: saved.property_bathrooms,
     sqft: saved.property_sqft,
   });
+
+  const getTypeBadge = (type: string) => {
+    let color = '';
+    let Icon = Tag;
+
+    switch(type.toLowerCase()) {
+      case 'house':
+        color = 'bg-emerald-500 text-white';
+        Icon = Home;
+        break;
+      case 'apartment':
+        color = 'bg-blue-500 text-white';
+        Icon = Building;
+        break;
+      case 'land':
+        color = 'bg-amber-500 text-white';
+        Icon = Grid;
+        break;
+      default:
+        color = 'bg-gray-500 text-white';
+    }
+
+    return (
+      <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${color}`}>
+        <Icon className="w-3 h-3" />
+        {type.charAt(0).toUpperCase() + type.slice(1)}
+      </span>
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
@@ -139,20 +168,27 @@ const FavoritesModal: React.FC<FavoritesModalProps> = ({
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
-                      <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
-                        <p className="text-lg font-bold text-emerald-600">{formatPrice(property.price)}</p>
-                        {property.type !== 'land' && (
+                      <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
+                        {/* Price */}
+                        <div className="flex items-center gap-2">
+                          <Tag className="w-4 h-4 text-emerald-600" />
+                          <span className="text-emerald-600 font-bold">{formatPrice(property.price)}</span>
+                        </div>
+                        {/* Type Badge */}
+                        {getTypeBadge(property.type)}
+                        {/* Bedrooms, Bathrooms, SqFt */}
+                        {property.type.toLowerCase() !== 'land' && (
                           <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
                             <span className="flex items-center gap-1">
-                              <Bed className="w-4 h-4" />
+                              <Bed className="w-4 h-4 text-emerald-600" />
                               {property.bedrooms}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Bath className="w-4 h-4" />
+                              <Bath className="w-4 h-4 text-emerald-600" />
                               {property.bathrooms}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Square className="w-4 h-4" />
+                              <Square className="w-4 h-4 text-emerald-600" />
                               {property.sqft.toLocaleString()}
                             </span>
                           </div>

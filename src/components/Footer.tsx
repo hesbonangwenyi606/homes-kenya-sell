@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Home, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Home, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +17,14 @@ const Footer: React.FC = () => {
 
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
-  const quickLinks = ['About Us', 'Our Agents', 'Blog', 'Careers', 'FAQs', 'Contact'];
+  const quickLinks = [
+    { name: 'About Us', path: '/about' },
+    { name: 'Our Agents', path: '/agents' },
+    { name: 'Blog', path: '/blog' },
+    { name: 'Careers', path: '/careers' },
+    { name: 'FAQs', path: '/faqs' },
+    { name: 'Contact', path: '/contact' },
+  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -54,9 +62,9 @@ const Footer: React.FC = () => {
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+          <div className="col-span-2 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
                 <Home className="w-6 h-6 text-white" />
@@ -68,20 +76,6 @@ const Footer: React.FC = () => {
             <p className="text-gray-400 mb-6 max-w-sm">
               Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
             </p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-gray-400">
-                <MapPin className="w-5 h-5 text-emerald-500" />
-                <span>Arcade House, 1st Floor, Nairobi, Kenya</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone className="w-5 h-5 text-emerald-500" />
-                <span>+254 700 123 456</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Mail className="w-5 h-5 text-emerald-500" />
-                <span>info@kenyahomes.co.ke</span>
-              </div>
-            </div>
             <div className="flex gap-4 mt-6">
               <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5" />
@@ -104,10 +98,13 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {propertyTypes.map((type) => (
                 <li key={type}>
-                  <a href="#properties" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                  <Link
+                    to={`/properties?type=${type}`}
+                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                  >
                     <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                     {type}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -119,10 +116,13 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {locations.map((location) => (
                 <li key={location}>
-                  <a href="#properties" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                  <Link
+                    to={`/properties?location=${location}`}
+                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                  >
                     <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                     {location}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -133,13 +133,30 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                  >
                     <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Contact Info (Last Column) */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
+            <ul className="space-y-3 text-gray-400">
+              <li>Arcade House, 1st Floor, Nairobi, Kenya</li>
+              <li>
+                <a href="tel:+254725 604 549" className="hover:text-emerald-400 transition-colors">+254 725 604 549</a>
+              </li>
+              <li>
+                <a href="mailto:info@kenyahomes.co.ke" className="hover:text-emerald-400 transition-colors">info@kenyahomes.co.ke</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -147,16 +164,15 @@ const Footer: React.FC = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-400 text-sm">
-              © 2026 KenyaHomes. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm">
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</a>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-400 text-sm">
+            © 2026 KenyaHomes. All rights reserved.
+          </p>
+
+          <div className="flex gap-6 text-sm">
+            <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</Link>
+            <Link to="/cookie-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
