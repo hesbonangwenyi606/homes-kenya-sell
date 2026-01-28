@@ -1,11 +1,37 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Phone, Mail, Whatsapp } from 'lucide-react';
 
 export default function ContactInfo() {
   return (
-    <div>
-      {/* Location */}
-      Nairobi, Kenya
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 text-gray-400">
+        <MapPin className="w-5 h-5 text-emerald-500" />
+        <span>Nairobi, Kenya</span>
+      </div>
+
+      <div className="flex items-center gap-3 text-gray-400">
+        <Phone className="w-5 h-5 text-emerald-500" />
+        <a
+          href="tel:+254725604549"
+          className="hover:text-emerald-400 transition-colors"
+        >
+          +254 725604549
+        </a>
+
+        <a
+          href="https://wa.me/254725604549"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-3 text-green-500 hover:text-green-400 transition-colors animate-bounce"
+        >
+          <Whatsapp className="w-6 h-6" />
+        </a>
+      </div>
+
+      <div className="flex items-center gap-3 text-gray-400">
+        <Mail className="w-5 h-5 text-emerald-500" />
+        <span>hemaprinhomes@gmail.com</span>
+      </div>
     </div>
   );
 }
