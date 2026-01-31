@@ -59,7 +59,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
@@ -109,7 +108,6 @@ const Footer: React.FC = () => {
               ))}
             </ul>
           </div>
-
           {/* Locations */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Locations</h4>
