@@ -100,9 +100,6 @@ const Header: React.FC<HeaderProps> = ({
             </a>
             <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
             <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <a href="#calculator" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
-              Mortgage Calculator
-            </a>
             <a href="#contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Contact
             </a>
@@ -243,7 +240,7 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
         <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
-        <a href="#calculator" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Mortgage Calculator</a>
+
         <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>
 
         {user ? (
