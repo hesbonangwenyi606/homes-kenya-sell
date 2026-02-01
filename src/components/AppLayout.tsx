@@ -133,7 +133,7 @@ const AppLayout: React.FC = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative h-[600px] lg:h-[700px] overflow-hidden">
+      <section id="home" className="relative h-[600px] lg:h-[700px] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572279611_caa18220.jpg')" }}
@@ -184,25 +184,7 @@ const AppLayout: React.FC = () => {
         </div>
       </section>
 
-      {/* Property Types */}
-      <section className="py-12 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
-          {propertyTypes.map((type) => (
-            <button
-              key={type.id}
-              onClick={() => setSelectedType(type.id)}
-              className={`flex items-center gap-2 px-6 py-4 rounded-2xl transition ${
-                selectedType === type.id ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-emerald-50'
-              }`}
-            >
-              <type.icon className="w-5 h-5" />
-              {type.label}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Properties Grid */}
+      {/* Properties Section */}
       <section id="properties" className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           {filteredProperties.length > 0 ? (
@@ -242,7 +224,7 @@ const AppLayout: React.FC = () => {
         <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Home?</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
           <a href="tel:+254725604549" className="px-8 py-4 bg-emerald-600 text-white rounded-xl">Call Us</a>
-          <a href="https://wa.me/254 725 604 549" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
+          <a href="https://wa.me/254725604549" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
           <a href="mailto:info@kenyahomes.co.ke" className="px-8 py-4 bg-gray-100 text-gray-700 rounded-xl">Email</a>
         </div>
       </section>
