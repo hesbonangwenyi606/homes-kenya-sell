@@ -77,8 +77,8 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 transition-colors w-full">
+      <div className="w-full px-2 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
 
           {/* Logo */}
@@ -122,7 +122,17 @@ const Header: React.FC<HeaderProps> = ({
             </button>
 
             {user ? (
-              <UserMenu user={user} getUserDisplayName={getUserDisplayName} getUserInitials={getUserInitials} showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onSignOut={onSignOut} />
+              <UserMenu
+                user={user}
+                getUserDisplayName={getUserDisplayName}
+                getUserInitials={getUserInitials}
+                showUserMenu={showUserMenu}
+                setShowUserMenu={setShowUserMenu}
+                favoritesCount={favoritesCount}
+                onShowFavorites={onShowFavorites}
+                onShowInquiries={onShowInquiries}
+                onSignOut={onSignOut}
+              />
             ) : (
               <button onClick={onShowAuth} className="hidden sm:flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">
                 <User className="w-4 h-4" />
@@ -138,14 +148,24 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <MobileMenu propertyTypes={propertyTypes} locations={locationsList} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
+          <MobileMenu
+            propertyTypes={propertyTypes}
+            locations={locationsList}
+            user={user}
+            favoritesCount={favoritesCount}
+            onShowFavorites={onShowFavorites}
+            onShowInquiries={onShowInquiries}
+            onShowAuth={onShowAuth}
+            onSignOut={onSignOut}
+            closeMenu={() => setMobileMenuOpen(false)}
+          />
         )}
       </div>
     </header>
   );
 };
 
-// ------------------- Dropdown Component -------------------
+// ------------------- Dropdown -------------------
 const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
   <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
     <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
@@ -183,7 +203,7 @@ const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, set
     {showUserMenu && (
       <>
         <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
+        <div className="absolute right-0 mt-2 w-full max-w-xs sm:max-w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{getUserDisplayName()}</p>
             <p className="text-xs text-gray-500 dark:text-gray-300 truncate">{user.email}</p>
@@ -215,12 +235,12 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   const Accordion = ({ title, items, type }) => {
     const isOpen = openSection === title;
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <button onClick={() => setOpenSection(isOpen ? null : title)} className="px-4 py-3 w-full text-left flex justify-between items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">
           {title} <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         {isOpen && (
-          <div className="flex flex-col pl-6">
+          <div className="flex flex-col pl-6 w-full">
             {items.map((item) => {
               const Icon = type === 'icon' ? item.icon : null;
               return (
@@ -236,21 +256,21 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   };
 
   return (
-    <div className="lg:hidden border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
-      <nav className="flex flex-col gap-2">
-        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
+    <div className="lg:hidden w-full border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
+      <nav className="flex flex-col w-full gap-2">
+        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Home</a>
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
-        <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>
+        <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Contact</a>
 
         {user ? (
           <>
-            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><Heart className="w-4 h-4" /> Saved Properties</button>
-            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><FileText className="w-4 h-4" /> My Inquiries</button>
-            <button onClick={() => { onSignOut(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-medium"><LogOut className="w-4 h-4" /> Sign Out</button>
+            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2 w-full"><Heart className="w-4 h-4" /> Saved Properties</button>
+            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2 w-full"><FileText className="w-4 h-4" /> My Inquiries</button>
+            <button onClick={() => { onSignOut(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-medium w-[calc(100%-2rem)]"><LogOut className="w-4 h-4" /> Sign Out</button>
           </>
         ) : (
-          <button onClick={() => { onShowAuth(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">
+          <button onClick={() => { onShowAuth(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium w-[calc(100%-2rem)]">
             <User className="w-4 h-4" /> Sign In
           </button>
         )}
