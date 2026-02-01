@@ -1,16 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Search,
-  SlidersHorizontal,
   Home,
   Building,
   TreePine,
-  TrendingUp,
-  Shield,
-  Users,
-  MessageCircle,
-  Phone,
-  Mail,
 } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
@@ -21,7 +14,7 @@ import TestimonialCard from './TestimonialCard';
 import AuthModal from './AuthModal';
 import FavoritesModal from './FavoritesModal';
 import InquiriesModal from './InquiriesModal';
-import { properties, locations, priceRanges, bedroomOptions } from '@/data/properties';
+import { properties, locations, priceRanges } from '@/data/properties';
 import { testimonials } from '@/data/agents';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedProperties } from '@/hooks/useSavedProperties';
@@ -40,7 +33,6 @@ const AppLayout: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedPriceRange, setSelectedPriceRange] = useState(0);
   const [selectedBedrooms, setSelectedBedrooms] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -56,86 +48,114 @@ const AppLayout: React.FC = () => {
     { id: 'land', label: 'Land', icon: TreePine },
   ];
 
-  // Quick Stats
-  const stats = [
-    { label: 'Properties Listed', value: '500+' },
-    { label: 'Happy Clients', value: '900+' },
-    { label: 'Cities Covered', value: '47' },
-    { label: 'Expert Agents', value: '150+' },
-  ];
+  // Handlers with useCallback
+  const handleToggleFavorite = useCallback(
+    async (property: Property) => {
+      if (!user) {
+        toast({ title: 'Sign in required', description: 'Please sign in to save properties.', variant: 'destructive' });
+        setShowAuth(true);
+        return;
+      }
+      try {
+        await toggleSaveProperty(property);
+      } catch {
+        toast({ title: 'Error', description: 'Failed to update favorites.', variant: 'destructive' });
+      }
+    },
+    [user, toggleSaveProperty, toast]
+  );
+
+  const handleClickProperty = useCallback(
+    (property: Property) => setSelectedProperty(property),
+    []
+  );
+
+  const handleSubmitInquiry = useCallback(
+    async (formData: { name: string; email: string; phone: string; message: string }) => {
+      if (!selectedProperty) return;
+      try {
+        await submitInquiry(selectedProperty, formData);
+        toast({ title: 'Inquiry submitted', description: 'We will get back to you soon!' });
+      } catch {
+        toast({ title: 'Error', description: 'Failed to submit inquiry.', variant: 'destructive' });
+      }
+    },
+    [selectedProperty, submitInquiry, toast]
+  );
+
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    toast({ title: 'Signed out', description: 'You have been signed out successfully.' });
+  }, [signOut, toast]);
+
+  const handleShowFavorites = useCallback(() => setShowFavorites(true), []);
+  const handleShowAuth = useCallback(() => setShowAuth(true), []);
+  const handleShowInquiries = useCallback(() => setShowInquiries(true), []);
 
   // Filtered Properties
   const filteredProperties = useMemo(() => {
+    if (!Array.isArray(properties) || properties.length === 0) return [];
+
     let result = [...properties];
 
+    // Search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        (p) => p.title.toLowerCase().includes(query) || p.location.toLowerCase().includes(query)
+        (p) => p.title?.toLowerCase().includes(query) || p.location?.toLowerCase().includes(query)
       );
     }
 
+    // Type
     if (selectedType !== 'all') {
       result = result.filter((p) => p.type === selectedType);
     }
 
-    if (selectedLocation !== 'All Locations') {
-      result = result.filter((p) => p.location.toLowerCase().includes(selectedLocation.toLowerCase()));
+    // Location
+    if (selectedLocation && selectedLocation !== 'All Locations') {
+      result = result.filter((p) =>
+        p.location?.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
     }
 
-    const priceRange = priceRanges[selectedPriceRange];
-    result = result.filter((p) => p.price >= priceRange.min && p.price <= priceRange.max);
+    // Price
+    const priceRange = priceRanges?.[selectedPriceRange] ?? { min: 0, max: Infinity };
+    result = result.filter((p) => {
+      const price = typeof p.price === 'number' ? p.price : 0;
+      return price >= priceRange.min && price <= priceRange.max;
+    });
 
+    // Bedrooms
     if (selectedBedrooms > 0) {
-      result = result.filter((p) => p.bedrooms >= selectedBedrooms);
+      result = result.filter((p) => (p.bedrooms ?? 0) >= selectedBedrooms);
     }
 
-    switch (sortBy) {
-      case 'price-low':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        result.sort((a, b) => b.id - a.id);
-        break;
-      case 'featured':
-      default:
-        result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-    }
+    // Sorting
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return (a.price ?? 0) - (b.price ?? 0);
+        case 'price-high':
+          return (b.price ?? 0) - (a.price ?? 0);
+        case 'newest':
+          return (b.id ?? 0) - (a.id ?? 0);
+        case 'featured':
+        default:
+          return (Number(b.featured) || 0) - (Number(a.featured) || 0);
+      }
+    });
 
     return result;
   }, [searchQuery, selectedType, selectedLocation, selectedPriceRange, selectedBedrooms, sortBy]);
-
-  // Handlers
-  const handleToggleFavorite = async (property: Property) => {
-    if (!user) {
-      toast({ title: 'Sign in required', description: 'Please sign in to save properties.', variant: 'destructive' });
-      setShowAuth(true);
-      return;
-    }
-    await toggleSaveProperty(property);
-  };
-
-  const handleSubmitInquiry = async (formData: { name: string; email: string; phone: string; message: string }) => {
-    if (!selectedProperty) return;
-    await submitInquiry(selectedProperty, formData);
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast({ title: 'Signed out', description: 'You have been signed out successfully.' });
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Header
-        favoritesCount={savedProperties.length}
-        onShowFavorites={() => setShowFavorites(true)}
-        onShowAuth={() => setShowAuth(true)}
-        onShowInquiries={() => setShowInquiries(true)}
+        favoritesCount={savedProperties?.length ?? 0}
+        onShowFavorites={handleShowFavorites}
+        onShowAuth={handleShowAuth}
+        onShowInquiries={handleShowInquiries}
         user={user}
         onSignOut={handleSignOut}
       />
@@ -154,10 +174,8 @@ const AppLayout: React.FC = () => {
               Find Your Dream <span className="text-emerald-400">Home in Kenya</span>
             </h1>
             <p className="text-xl mb-6">
-              Discover thousands of verified properties across Kenya. From luxury villas in Karen to beachfront homes in Mombasa.
+              Discover thousands of verified properties across Kenya.
             </p>
-
-            {/* Search */}
             <div className="bg-white rounded-2xl p-2 shadow-lg">
               <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex-1 relative">
@@ -220,8 +238,8 @@ const AppLayout: React.FC = () => {
                   key={property.id}
                   property={property}
                   onFavorite={() => handleToggleFavorite(property)}
-                  isFavorite={isPropertySaved(property.id)}
-                  onClick={setSelectedProperty}
+                  isFavorite={isPropertySaved?.(property.id) ?? false}
+                  onClick={() => handleClickProperty(property)}
                 />
               ))}
             </div>
@@ -238,9 +256,7 @@ const AppLayout: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What Our Clients Say</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((testimonial) => (
-              <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-            ))}
+            {testimonials.map((t) => <TestimonialCard key={t.id} testimonial={t} />)}
           </div>
         </div>
       </section>
@@ -252,16 +268,6 @@ const AppLayout: React.FC = () => {
         </div>
       </section>
 
-      {/* Contact CTA */}
-      <section id="contact" className="py-16 bg-white text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Home?</h2>
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
-          <a href="tel:+254700123456" className="px-8 py-4 bg-emerald-600 text-white rounded-xl">Call Us</a>
-          <a href="https://wa.me/254 725 604 549" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
-          <a href="mailto:info@kenyahomes.co.ke" className="px-8 py-4 bg-gray-100 text-gray-700 rounded-xl">Email</a>
-        </div>
-      </section>
-
       <Footer />
 
       {/* Modals */}
@@ -270,15 +276,14 @@ const AppLayout: React.FC = () => {
           property={selectedProperty}
           onClose={() => setSelectedProperty(null)}
           onFavorite={handleToggleFavorite}
-          isFavorite={isPropertySaved(selectedProperty.id)}
+          isFavorite={isPropertySaved?.(selectedProperty.id) ?? false}
           onSubmitInquiry={handleSubmitInquiry}
           isLoggedIn={!!user}
         />
       )}
-
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-      {showFavorites && <FavoritesModal favorites={savedProperties} onClose={() => setShowFavorites(false)} />}
-      {showInquiries && <InquiriesModal inquiries={inquiries} onClose={() => setShowInquiries(false)} />}
+      {showFavorites && <FavoritesModal favorites={savedProperties ?? []} onClose={() => setShowFavorites(false)} />}
+      {showInquiries && <InquiriesModal inquiries={inquiries ?? []} onClose={() => setShowInquiries(false)} />}
     </div>
   );
 };
