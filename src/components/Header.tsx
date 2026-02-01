@@ -7,9 +7,7 @@ import {
   ChevronDown,
   Home,
   Building,
-  MapPin,
   LogOut,
-  FileText,
   Sun,
   Moon
 } from 'lucide-react';
@@ -58,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
   const propertyTypes = [
     { name: 'Houses', icon: Home },
     { name: 'Apartments', icon: Building },
-    { name: 'Land', icon: MapPin },
+    { name: 'Land', icon: Home },  // Using Home icon for simplicity
     { name: 'Bungalows', icon: Home },
   ];
 
@@ -183,11 +181,6 @@ const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, set
       <>
         <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
         <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
-          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{getUserDisplayName()}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-300 truncate">{user.email}</p>
-          </div>
-
           <UserMenuButton icon={Heart} label="Saved Properties" onClick={onShowFavorites} badge={favoritesCount} />
           <UserMenuButton icon={FileText} label="My Inquiries" onClick={onShowInquiries} />
           <div className="border-t border-gray-100 dark:border-gray-700 mt-2 pt-2">
@@ -240,7 +233,6 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
         <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
-
         <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>
 
         {user ? (
