@@ -14,6 +14,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface HeaderProps {
@@ -96,14 +97,14 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
-            <a href="#home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+            <Link to="/home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Home
-            </a>
-            <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
-            <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <a href="#contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+            </Link>
+            <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" basePath="/properties" />
+            <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} basePath="/locations" />
+            <Link to="/contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Contact
-            </a>
+            </Link>
           </nav>
 
           {/* Right Actions */}
@@ -166,7 +167,7 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 // ------------------- Dropdown -------------------
-const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
+const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type, basePath = '' }) => (
   <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
     <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
       {title} <ChevronDown className="w-4 h-4" />
@@ -175,11 +176,16 @@ const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => 
       <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
         {items.map((item) => {
           const Icon = type === 'icon' ? item.icon : null;
+          const path = basePath ? `${basePath}/${(item.name ?? item).toString().toLowerCase()}` : '#';
           return (
-            <a key={item.name ?? item} href="#" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+            <Link
+              key={item.name ?? item}
+              to={path}
+              className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            >
               {Icon && <Icon className="w-4 h-4" />}
               {item.name ?? item}
-            </a>
+            </Link>
           );
         })}
       </div>
@@ -243,10 +249,16 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
           <div className="flex flex-col pl-6 w-full">
             {items.map((item) => {
               const Icon = type === 'icon' ? item.icon : null;
+              const path = type === 'icon' ? `/properties/${item.name.toLowerCase()}` : `/locations/${item.toLowerCase()}`;
               return (
-                <a key={item.name ?? item} href="#" onClick={closeMenu} className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2">
+                <Link
+                  key={item.name ?? item}
+                  to={path}
+                  onClick={closeMenu}
+                  className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"
+                >
                   {Icon && <Icon className="w-4 h-4" />} {item.name ?? item}
-                </a>
+                </Link>
               );
             })}
           </div>
@@ -258,10 +270,10 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   return (
     <div className="lg:hidden w-full border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
       <nav className="flex flex-col w-full gap-2">
-        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Home</a>
+        <Link to="/home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Home</Link>
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
-        <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Contact</a>
+        <Link to="/contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Contact</Link>
 
         {user ? (
           <>
