@@ -19,7 +19,6 @@ const Footer: React.FC = () => {
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = [
     { name: 'About Us', path: '/about' },
-    { name: 'Our Agents', path: '/agents' },
     { name: 'Blog', path: '/blog' },
     { name: 'Careers', path: '/careers' },
     { name: 'FAQs', path: '/faqs' },
