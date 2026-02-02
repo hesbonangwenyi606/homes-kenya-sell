@@ -19,7 +19,6 @@ Detailed property pages with images and descriptions
 Contact and inquiry functionality
 
 Mobile-friendly, responsive design
-
 SEO-friendly structure for better visibility
 
 Getting Started
