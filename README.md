@@ -13,7 +13,6 @@ Vite – fast development server and builds
 
 ESLint – code quality and consistency
 Features (Planned & In Progress)
-
 Property listings for homes and land
 
 Detailed property pages with images and descriptions
