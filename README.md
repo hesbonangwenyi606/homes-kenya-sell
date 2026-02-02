@@ -30,8 +30,6 @@ Clone the repository and install dependencies:
 
 npm install
 npm run dev
-
-
 The app will run locally with hot module replacement (HMR) enabled.
 
 Project Status
