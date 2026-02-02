@@ -12,7 +12,6 @@ TypeScript – type safety and maintainability
 Vite – fast development server and builds
 
 ESLint – code quality and consistency
-
 Features (Planned & In Progress)
 
 Property listings for homes and land
