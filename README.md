@@ -8,9 +8,7 @@ The goal is simple: make property discovery and sales clearer, faster, and more 
 
 Tech Stack
 React – UI development
-
 TypeScript – type safety and maintainability
-
 Vite – fast development server and builds
 
 ESLint – code quality and consistency
