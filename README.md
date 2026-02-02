@@ -4,7 +4,6 @@ This template provides a minimal setup to get React working in Vite with HMR and
 Homes Kenya Sell
 A modern web application for listing, marketing, and selling homes and land in Kenya.
 Built with React, TypeScript, and Vite for speed, reliability, and a smooth developer experience.
-
 The goal is simple: make property discovery and sales clearer, faster, and more trustworthy for buyers and sellers.
 
 Tech Stack
