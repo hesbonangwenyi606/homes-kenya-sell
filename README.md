@@ -7,7 +7,6 @@ Built with React, TypeScript, and Vite for speed, reliability, and a smooth deve
 The goal is simple: make property discovery and sales clearer, faster, and more trustworthy for buyers and sellers.
 
 Tech Stack
-
 React – UI development
 
 TypeScript – type safety and maintainability
