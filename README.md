@@ -17,7 +17,6 @@ Features (Planned & In Progress)
 Property listings for homes and land
 
 Detailed property pages with images and descriptions
-
 Contact and inquiry functionality
 
 Mobile-friendly, responsive design
