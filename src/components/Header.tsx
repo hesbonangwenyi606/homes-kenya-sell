@@ -26,8 +26,24 @@ interface HeaderProps {
   onSignOut: () => void;
 }
 
-const locationsList = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
+// ------------------- Paths -------------------
+const propertyTypes = [
+  { name: 'Houses', icon: Home, path: '/properties/houses' },
+  { name: 'Apartments', icon: Building, path: '/properties/apartments' },
+  { name: 'Land', icon: MapPin, path: '/properties/land' },
+  { name: 'Bungalows', icon: TreePine, path: '/properties/bungalows' },
+];
 
+const locationsList = [
+  { name: 'Nairobi', path: '/locations/nairobi' },
+  { name: 'Juja', path: '/locations/juja' },
+  { name: 'Kiambu', path: '/locations/kiambu' },
+  { name: 'Ruiru', path: '/locations/ruiru' },
+  { name: 'Thika', path: '/locations/thika' },
+  { name: 'Limuru', path: '/locations/limuru' },
+];
+
+// ------------------- Header -------------------
 const Header: React.FC<HeaderProps> = ({
   favoritesCount,
   onShowFavorites,
@@ -56,13 +72,6 @@ const Header: React.FC<HeaderProps> = ({
     document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', darkMode ? 'light' : 'dark');
   };
-
-  const propertyTypes = [
-    { name: 'Houses', icon: Home },
-    { name: 'Apartments', icon: Building },
-    { name: 'Land', icon: MapPin },
-    { name: 'Bungalows', icon: TreePine },
-  ];
 
   const getUserDisplayName = () => {
     if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
@@ -100,8 +109,8 @@ const Header: React.FC<HeaderProps> = ({
             <Link to="/home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Home
             </Link>
-            <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" basePath="/properties" />
-            <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} basePath="/locations" />
+            <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
+            <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
             <Link to="/contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Contact
             </Link>
@@ -167,7 +176,7 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 // ------------------- Dropdown -------------------
-const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type, basePath = '' }) => (
+const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
   <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
     <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
       {title} <ChevronDown className="w-4 h-4" />
@@ -176,15 +185,14 @@ const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type, baseP
       <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
         {items.map((item) => {
           const Icon = type === 'icon' ? item.icon : null;
-          const path = basePath ? `${basePath}/${(item.name ?? item).toString().toLowerCase()}` : '#';
           return (
             <Link
-              key={item.name ?? item}
-              to={path}
+              key={item.name}
+              to={item.path}
               className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
             >
               {Icon && <Icon className="w-4 h-4" />}
-              {item.name ?? item}
+              {item.name}
             </Link>
           );
         })}
@@ -249,15 +257,14 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
           <div className="flex flex-col pl-6 w-full">
             {items.map((item) => {
               const Icon = type === 'icon' ? item.icon : null;
-              const path = type === 'icon' ? `/properties/${item.name.toLowerCase()}` : `/locations/${item.toLowerCase()}`;
               return (
                 <Link
-                  key={item.name ?? item}
-                  to={path}
+                  key={item.name}
+                  to={item.path}
                   onClick={closeMenu}
                   className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"
                 >
-                  {Icon && <Icon className="w-4 h-4" />} {item.name ?? item}
+                  {Icon && <Icon className="w-4 h-4" />} {item.name}
                 </Link>
               );
             })}
