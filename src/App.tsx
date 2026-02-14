@@ -31,5 +31,3 @@ const App = () => (
     </QueryClientProvider>
   </ThemeProvider>
 );
-
-export 
