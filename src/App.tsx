@@ -29,4 +29,4 @@ const App = () => (
         <FloatingWhatsApp />
       </TooltipProvider>
     </QueryClientProvider>
-  </ThemeProv
+  
