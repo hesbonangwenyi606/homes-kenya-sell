@@ -32,4 +32,4 @@ const App = () => (
   </ThemeProvider>
 );
 
-export 
+export default App;
