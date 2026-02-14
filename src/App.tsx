@@ -28,5 +28,4 @@ const App = () => (
         {/* ✅ Floating WhatsApp Button */}
         <FloatingWhatsApp />
       </TooltipProvider>
-    </QueryClientProvider>
-  
+    </QueryClientProv
