@@ -18,6 +18,7 @@ const Footer: React.FC = () => {
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = [
+    { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
     { name: 'Blog', path: '/blog' },
     { name: 'Careers', path: '/careers' },
@@ -29,143 +30,127 @@ const Footer: React.FC = () => {
     <footer className="bg-gray-900 text-white">
       {/* Newsletter Section */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Get New Listings in Your Inbox</h3>
-              <p className="text-emerald-100">Subscribe to receive the latest properties and market insights.</p>
-            </div>
-            <form onSubmit={handleSubscribe} className="flex w-full md:w-auto gap-3">
-              <div className="relative flex-1 md:w-80">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2"
-              >
-                {subscribed ? 'Subscribed!' : 'Subscribe'}
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <h3 className="text-2xl font-bold mb-2">Get New Listings in Your Inbox</h3>
+            <p className="text-emerald-100">Subscribe to receive the latest properties and market insights.</p>
           </div>
+          <form onSubmit={handleSubscribe} className="flex w-full md:w-auto gap-3">
+            <div className="relative flex-1 md:w-80">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2"
+            >
+              {subscribed ? 'Subscribed!' : 'Subscribe'}
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
         </div>
       </div>
+
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
-                <Home className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">Kenya<span className="text-emerald-400">Homes</span></h2>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        {/* Brand / Contact */}
+        <div className="col-span-2 md:col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
+              <Home className="w-6 h-6 text-white" />
             </div>
-            <p className="text-gray-400 mb-6 max-w-sm">
-              Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
-            </p>
-            <div className="flex gap-4 mt-6">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
+            <h2 className="text-xl font-bold">Kenya<span className="text-emerald-400">Homes</span></h2>
+          </div>
+          <p className="text-gray-400 mb-6 max-w-sm">
+            Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
+          </p>
+          <div className="space-y-2 text-gray-400">
+            <div>
+              <Phone className="inline w-5 h-5 mr-2 text-emerald-500" />
+              <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">+254 725 604 549</a>
+            </div>
+            <div>
+              <Mail className="inline w-5 h-5 mr-2 text-emerald-500" />
+              <a href="mailto:info@kenyahomes.co.ke" className="hover:text-emerald-400 transition-colors">info@kenyahomes.co.ke</a>
+            </div>
+            <div>
+              Arcade House, 1st Floor, Nairobi, Kenya
             </div>
           </div>
-
-          {/* Property Types */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Property Types</h4>
-            <ul className="space-y-3">
-              {propertyTypes.map((type) => (
-                <li key={type}>
-                  <Link
-                    to={`/properties?type=${type}`}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {type}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div className="flex gap-4 mt-6">
+            <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"><Facebook className="w-5 h-5" /></a>
+            <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"><Instagram className="w-5 h-5" /></a>
+            <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"><Linkedin className="w-5 h-5" /></a>
           </div>
-          {/* Locations */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Locations</h4>
-            <ul className="space-y-3">
-              {locations.map((location) => (
-                <li key={location}>
-                  <Link
-                    to={`/properties?location=${location}`}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {location}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.path}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info (Last Column) */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-            <ul className="space-y-3 text-gray-400">
-              <li>Arcade House, 1st Floor, Nairobi, Kenya</li>
-              <li>
-                <a href="tel:+254725 604 549" className="hover:text-emerald-400 transition-colors">+254 725 604 549</a>
+        {/* Property Types */}
+        <div>
+          <h4 className="text-lg font-semibold mb-4">Property Types</h4>
+          <ul className="space-y-3">
+            {propertyTypes.map((type) => (
+              <li key={type}>
+                <Link
+                  to={`/properties/${type.toLowerCase()}`}
+                  className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  {type}
+                </Link>
               </li>
-              <li>
-                <a href="mailto:info@kenyahomes.co.ke" className="hover:text-emerald-400 transition-colors">info@kenyahomes.co.ke</a>
+            ))}
+          </ul>
+        </div>
+
+        {/* Locations */}
+        <div>
+          <h4 className="text-lg font-semibold mb-4">Locations</h4>
+          <ul className="space-y-3">
+            {locations.map((location) => (
+              <li key={location}>
+                <Link
+                  to={`/locations/${location.toLowerCase()}`}
+                  className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  {location}
+                </Link>
               </li>
-            </ul>
-          </div>
+            ))}
+          </ul>
+        </div>
+
+        {/* Quick Links */}
+        <div>
+          <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+          <ul className="space-y-3">
+            {quickLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  to={link.path}
+                  className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-gray-400 text-sm">
-            © 2026 KenyaHomes. All rights reserved.
-          </p>
-
+          <p className="text-gray-400 text-sm">© 2026 KenyaHomes. All rights reserved.</p>
           <div className="flex gap-6 text-sm">
             <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</Link>
             <Link to="/terms-of-service" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</Link>
