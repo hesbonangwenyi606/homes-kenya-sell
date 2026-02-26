@@ -4,11 +4,11 @@ export const properties: Property[] = [
   
 {
   id: 1,
-  title: 'Modern Villa in Karen',
+  title: 'Nairobi, Kenya',
   location: 'Nairobi, Kenya',
-  price: 85000000,
-  bedrooms: 5,
-  bathrooms: 4,
+  price: 7000000,
+  bedrooms: 3,
+  bathrooms: 3,
   sqft: 5500,
   type: 'house',
   image: 'https://i.imghippo.com/files/jh9268pHk.jpeg',
