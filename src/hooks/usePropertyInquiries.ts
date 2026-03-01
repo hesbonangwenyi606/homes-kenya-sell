@@ -63,7 +63,7 @@ export function usePropertyInquiries(userId: string | undefined) {
   const submitInquiry = async (
     property: Property,
     formData: InquiryFormData,
-    agent?: Agent
+    agent?: { id: number; name: string }
   ) => {
     try {
       const { data, error } = await supabase

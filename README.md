@@ -1,37 +1,28 @@
 # React + TypeScript + Vite
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 # homes-kenya-sell
-Homes Kenya Sell
-A modern web application for listing, marketing, and selling homes and land in Kenya.
-Built with React, TypeScript, and Vite for speed, reliability, and a smooth developer experience.
-The goal is simple: make property discovery and sales clearer, faster, and more trustworthy for buyers and sellers.
 
-Tech Stack
-React – UI development
-TypeScript – type safety and maintainability
-Vite – fast development server and builds
+## Environment Setup
 
-ESLint – code quality and consistency
-Features (Planned & In Progress)
-Property listings for homes and land
-Detailed property pages with images and descriptions
-Contact and inquiry functionality
+This app reads Supabase credentials from Vite environment variables.
 
-Mobile-friendly, responsive design
-SEO-friendly structure for better visibility
+1. Copy `.env.example` to `.env.local`
+2. Set:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
 
-Getting Started
+Do not put database direct connection strings or service role secrets in frontend env files.
 
-Clone the repository and install dependencies:
+## Supabase Database Setup (New Project)
 
-npm install
-npm run dev
-The app will run locally with hot module replacement (HMR) enabled.
+If this is a fresh Supabase project, run the SQL script below in Supabase SQL Editor:
 
-Project Status
+- [`db/supabase-init.sql`](./db/supabase-init.sql)
 
-Active development. Features and UI are evolving as the platform grows.
-
-Purpose
-
-This project aims to support real estate sales in Kenya by providing a clean, modern, and accessible online platform.
+This creates:
+- `public.saved_properties` for favorites
+- `public.property_inquiries` for inquiry submissions
+- `public.contact_leads` for the wide contact form
+- `public.newsletter_subscribers` for footer subscriptions
+- Required RLS policies and indexes

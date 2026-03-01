@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Menu,
   X,
@@ -8,13 +8,11 @@ import {
   Home,
   Building,
   MapPin,
-  TreePine,
   LogOut,
   FileText,
   Sun,
   Moon
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface HeaderProps {
@@ -26,24 +24,8 @@ interface HeaderProps {
   onSignOut: () => void;
 }
 
-// ------------------- Paths -------------------
-const propertyTypes = [
-  { name: 'Houses', icon: Home, path: '/properties/houses' },
-  { name: 'Apartments', icon: Building, path: '/properties/apartments' },
-  { name: 'Land', icon: MapPin, path: '/properties/land' },
-  { name: 'Bungalows', icon: TreePine, path: '/properties/bungalows' },
-];
+const locationsList = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
 
-const locationsList = [
-  { name: 'Nairobi', path: '/locations/nairobi' },
-  { name: 'Juja', path: '/locations/juja' },
-  { name: 'Kiambu', path: '/locations/kiambu' },
-  { name: 'Ruiru', path: '/locations/ruiru' },
-  { name: 'Thika', path: '/locations/thika' },
-  { name: 'Limuru', path: '/locations/limuru' },
-];
-
-// ------------------- Header -------------------
 const Header: React.FC<HeaderProps> = ({
   favoritesCount,
   onShowFavorites,
@@ -56,6 +38,8 @@ const Header: React.FC<HeaderProps> = ({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const desktopNavRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -67,11 +51,44 @@ const Header: React.FC<HeaderProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!desktopNavRef.current) return;
+      if (!desktopNavRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setIsScrolled(currentY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const toggleTheme = () => {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', darkMode ? 'light' : 'dark');
   };
+
+  const propertyTypes = [
+    { name: 'Houses', icon: Home },
+    { name: 'Apartments', icon: Building },
+    { name: 'Land', icon: MapPin },
+    { name: 'Bungalows', icon: Home },
+  ];
 
   const getUserDisplayName = () => {
     if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
@@ -87,37 +104,43 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 transition-colors w-full">
-      <div className="w-full px-2 sm:px-4 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border-b border-gray-200/70 dark:border-gray-700/70'
+          : 'bg-white dark:bg-gray-900 shadow-sm'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 min-w-0">
 
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
-              <Home className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Home className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                 Kenya<span className="text-emerald-600">Homes</span>
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-300 -mt-1">Find Your Dream Home</p>
+              <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-300 -mt-1">Find Your Dream Home</p>
             </div>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <Link to="/home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+          <nav ref={desktopNavRef} className="hidden lg:flex items-center gap-8">
+            <a href="#home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Home
-            </Link>
+            </a>
             <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
             <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <Link to="/contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+            <a href="#contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
               Contact
-            </Link>
+            </a>
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 sm:gap-4 flex-shrink-0">
             <button onClick={onShowFavorites} className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
               <Heart className="w-6 h-6" />
               {favoritesCount > 0 && (
@@ -127,22 +150,12 @@ const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            <button onClick={toggleTheme} className="flex items-center gap-1 px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 transition">
+            <button onClick={toggleTheme} className="flex items-center gap-1 px-2.5 sm:px-3 py-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 transition">
               {darkMode ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
             {user ? (
-              <UserMenu
-                user={user}
-                getUserDisplayName={getUserDisplayName}
-                getUserInitials={getUserInitials}
-                showUserMenu={showUserMenu}
-                setShowUserMenu={setShowUserMenu}
-                favoritesCount={favoritesCount}
-                onShowFavorites={onShowFavorites}
-                onShowInquiries={onShowInquiries}
-                onSignOut={onSignOut}
-              />
+              <UserMenu user={user} getUserDisplayName={getUserDisplayName} getUserInitials={getUserInitials} showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onSignOut={onSignOut} />
             ) : (
               <button onClick={onShowAuth} className="hidden sm:flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">
                 <User className="w-4 h-4" />
@@ -158,42 +171,39 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <MobileMenu
-            propertyTypes={propertyTypes}
-            locations={locationsList}
-            user={user}
-            favoritesCount={favoritesCount}
-            onShowFavorites={onShowFavorites}
-            onShowInquiries={onShowInquiries}
-            onShowAuth={onShowAuth}
-            onSignOut={onSignOut}
-            closeMenu={() => setMobileMenuOpen(false)}
-          />
+          <MobileMenu propertyTypes={propertyTypes} locations={locationsList} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
         )}
       </div>
     </header>
   );
 };
 
-// ------------------- Dropdown -------------------
+// ------------------- Dropdown Component -------------------
 const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => (
-  <div className="relative" onMouseEnter={() => setActiveDropdown(title)} onMouseLeave={() => setActiveDropdown(null)}>
-    <button className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => setActiveDropdown(activeDropdown === title ? null : title)}
+      className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors"
+      aria-expanded={activeDropdown === title}
+      aria-haspopup="menu"
+    >
       {title} <ChevronDown className="w-4 h-4" />
     </button>
     {activeDropdown === title && (
-      <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
+      <div className="absolute top-full left-0 mt-1 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
         {items.map((item) => {
           const Icon = type === 'icon' ? item.icon : null;
           return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            <a
+              key={item.name ?? item}
+              href="#properties"
+              onClick={() => setActiveDropdown(null)}
+              className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
             >
               {Icon && <Icon className="w-4 h-4" />}
-              {item.name}
-            </Link>
+              {item.name ?? item}
+            </a>
           );
         })}
       </div>
@@ -204,20 +214,20 @@ const Dropdown = ({ title, items, activeDropdown, setActiveDropdown, type }) => 
 // ------------------- User Menu -------------------
 const UserMenu = ({ user, getUserDisplayName, getUserInitials, showUserMenu, setShowUserMenu, favoritesCount, onShowFavorites, onShowInquiries, onSignOut }) => (
   <div className="relative">
-    <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+    <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
       <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
         {getUserInitials()}
       </div>
       <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-200 max-w-[100px] truncate">
         {getUserDisplayName()}
       </span>
-      <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-300" />
+      <ChevronDown className="hidden sm:block w-4 h-4 text-gray-500 dark:text-gray-300" />
     </button>
 
     {showUserMenu && (
       <>
         <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-        <div className="absolute right-0 mt-2 w-full max-w-xs sm:max-w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
+        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-slideDownFade">
           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{getUserDisplayName()}</p>
             <p className="text-xs text-gray-500 dark:text-gray-300 truncate">{user.email}</p>
@@ -249,23 +259,18 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   const Accordion = ({ title, items, type }) => {
     const isOpen = openSection === title;
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col">
         <button onClick={() => setOpenSection(isOpen ? null : title)} className="px-4 py-3 w-full text-left flex justify-between items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">
           {title} <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         {isOpen && (
-          <div className="flex flex-col pl-6 w-full">
+          <div className="flex flex-col pl-6">
             {items.map((item) => {
               const Icon = type === 'icon' ? item.icon : null;
               return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  onClick={closeMenu}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"
-                >
-                  {Icon && <Icon className="w-4 h-4" />} {item.name}
-                </Link>
+                <a key={item.name ?? item} href="#properties" onClick={closeMenu} className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2">
+                  {Icon && <Icon className="w-4 h-4" />} {item.name ?? item}
+                </a>
               );
             })}
           </div>
@@ -275,21 +280,21 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   };
 
   return (
-    <div className="lg:hidden w-full border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
-      <nav className="flex flex-col w-full gap-2">
-        <Link to="/home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Home</Link>
+    <div className="lg:hidden border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
+      <nav className="flex flex-col gap-2">
+        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
-        <Link to="/contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium w-full">Contact</Link>
+        <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>
 
         {user ? (
           <>
-            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2 w-full"><Heart className="w-4 h-4" /> Saved Properties</button>
-            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2 w-full"><FileText className="w-4 h-4" /> My Inquiries</button>
-            <button onClick={() => { onSignOut(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-medium w-[calc(100%-2rem)]"><LogOut className="w-4 h-4" /> Sign Out</button>
+            <button onClick={() => { onShowFavorites(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><Heart className="w-4 h-4" /> Saved Properties</button>
+            <button onClick={() => { onShowInquiries(); closeMenu(); }} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg flex items-center gap-2"><FileText className="w-4 h-4" /> My Inquiries</button>
+            <button onClick={() => { onSignOut(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-medium"><LogOut className="w-4 h-4" /> Sign Out</button>
           </>
         ) : (
-          <button onClick={() => { onShowAuth(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium w-[calc(100%-2rem)]">
+          <button onClick={() => { onShowAuth(); closeMenu(); }} className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">
             <User className="w-4 h-4" /> Sign In
           </button>
         )}
