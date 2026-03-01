@@ -1,19 +1,18 @@
 import { Property } from '@/components/PropertyCard';
 
 export const properties: Property[] = [
-  
-{
-  id: 1,
-  title: 'Nairobi, Kenya',
-  location: 'Nairobi, Kenya',
-  price: 7000000,
-  bedrooms: 3,
-  bathrooms: 3,
-  sqft: 5500,
-  type: 'house',
-  image: 'https://i.imghippo.com/files/jh9268pHk.jpeg',
-  featured: true
-},
+  {
+    id: 1,
+    title: 'Modern Villa in Karen',
+    location: 'Nairobi',
+    price: 85000000,
+    bedrooms: 5,
+    bathrooms: 4,
+    sqft: 5500,
+    type: 'house',
+    image: '/heme%20sales%201.jpeg',
+    featured: true,
+  },
   {
     id: 2,
     title: 'Luxury Apartment in Westlands',
@@ -23,7 +22,7 @@ export const properties: Property[] = [
     bathrooms: 2,
     sqft: 2200,
     type: 'apartment',
-    image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572337743_f73af543.jpg',
+    image: '/home%20sales%202.jpeg',
     featured: true,
   },
   {
@@ -35,7 +34,7 @@ export const properties: Property[] = [
     bathrooms: 3,
     sqft: 3800,
     type: 'bungalow',
-    image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572407904_9244631f.png',
+    image: '/home%20sales%203.jpeg',
     featured: true,
   },
   {
@@ -47,7 +46,7 @@ export const properties: Property[] = [
     bathrooms: 0,
     sqft: 10890,
     type: 'land',
-    image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572540021_e8df48db.png',
+    image: '/home%20sales%204.jpeg',
   },
   {
     id: 5,

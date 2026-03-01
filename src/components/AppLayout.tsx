@@ -1,19 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
+  SlidersHorizontal,
   Home,
   Building,
   TreePine,
+  TrendingUp,
+  Shield,
+  Users,
+  MessageCircle,
+  Phone,
+  Mail,
 } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
 import PropertyCard, { Property } from './PropertyCard';
 import PropertyModal from './PropertyModal';
 import TestimonialCard from './TestimonialCard';
+import ContactSection from './ContactSection';
+import RevealOnScroll from './RevealOnScroll';
 import AuthModal from './AuthModal';
 import FavoritesModal from './FavoritesModal';
 import InquiriesModal from './InquiriesModal';
-import { properties, locations, priceRanges } from '@/data/properties';
+import { properties, locations, priceRanges, bedroomOptions } from '@/data/properties';
 import { testimonials } from '@/data/agents';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedProperties } from '@/hooks/useSavedProperties';
@@ -21,10 +30,11 @@ import { usePropertyInquiries } from '@/hooks/usePropertyInquiries';
 import { useToast } from '@/hooks/use-toast';
 
 const AppLayout: React.FC = () => {
+  const ITEMS_PER_PAGE = 6;
   const { toast } = useToast();
   const { user, signOut } = useAuth();
-  const { savedProperties, toggleSaveProperty, isPropertySaved } = useSavedProperties(user?.id);
-  const { inquiries, submitInquiry } = usePropertyInquiries(user?.id);
+  const { savedProperties, loading: favoritesLoading, toggleSaveProperty, unsaveProperty, isPropertySaved } = useSavedProperties(user?.id);
+  const { inquiries, loading: inquiriesLoading, submitInquiry } = usePropertyInquiries(user?.id);
 
   // States
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +48,7 @@ const AppLayout: React.FC = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showInquiries, setShowInquiries] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Property Types
   const propertyTypes = [
@@ -100,6 +111,22 @@ const AppLayout: React.FC = () => {
     return result;
   }, [searchQuery, selectedType, selectedLocation, selectedPriceRange, selectedBedrooms, sortBy]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredProperties.length / ITEMS_PER_PAGE));
+  const paginatedProperties = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProperties.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredProperties, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedType, selectedLocation, selectedPriceRange, selectedBedrooms, sortBy]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   // Handlers
   const handleToggleFavorite = async (property: Property) => {
     if (!user) {
@@ -107,12 +134,61 @@ const AppLayout: React.FC = () => {
       setShowAuth(true);
       return;
     }
-    await toggleSaveProperty(property);
+    const wasSaved = isPropertySaved(property.id);
+    const { error } = await toggleSaveProperty(property);
+    if (error) {
+      toast({
+        title: 'Unable to update favorites',
+        description: error.message || 'Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: wasSaved ? 'Removed from favorites' : 'Added to favorites',
+      description: wasSaved ? 'Property removed successfully.' : 'Property saved successfully.',
+    });
+  };
+
+  const handleRemoveFavorite = async (propertyId: number) => {
+    const { error } = await unsaveProperty(propertyId);
+    if (error) {
+      toast({
+        title: 'Unable to remove favorite',
+        description: error.message || 'Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Removed from favorites',
+      description: 'Property removed successfully.',
+    });
+  };
+
+  const handleViewFavoriteProperty = (property: Property) => {
+    setSelectedProperty(property);
+    setShowFavorites(false);
   };
 
   const handleSubmitInquiry = async (formData: { name: string; email: string; phone: string; message: string }) => {
     if (!selectedProperty) return;
-    await submitInquiry(selectedProperty, formData);
+    const { error } = await submitInquiry(selectedProperty, formData);
+    if (error) {
+      toast({
+        title: 'Unable to submit inquiry',
+        description: error.message || 'Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Inquiry submitted',
+      description: user ? 'You can track this in My Inquiries.' : 'Sign in to track inquiry status in your account.',
+    });
   };
 
   const handleSignOut = async () => {
@@ -121,7 +197,7 @@ const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden pt-16 sm:pt-20">
       {/* Header */}
       <Header
         favoritesCount={savedProperties.length}
@@ -159,13 +235,13 @@ const AppLayout: React.FC = () => {
                     placeholder="Search by location or property..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="px-4 py-4 rounded-xl bg-gray-50 cursor-pointer"
+                  className="px-4 py-4 rounded-xl bg-gray-50 text-gray-900 cursor-pointer"
                 >
                   <option value="All Locations">All Locations</option>
                   {locations.map((loc) => (
@@ -184,50 +260,111 @@ const AppLayout: React.FC = () => {
         </div>
       </section>
 
-      {/* Properties Section */}
-      <section id="properties" className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          {filteredProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  onFavorite={() => handleToggleFavorite(property)}
-                  isFavorite={isPropertySaved(property.id)}
-                  onClick={setSelectedProperty}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-500">No properties found. Adjust your filters.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 bg-emerald-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What Our Clients Say</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((testimonial) => (
-              <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+      <RevealOnScroll>
+        {/* Property Types */}
+        <section className="py-12 bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
+            {propertyTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setSelectedType(type.id)}
+                className={`flex items-center gap-2 px-6 py-4 rounded-2xl transition ${
+                  selectedType === type.id ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-emerald-50'
+                }`}
+              >
+                <type.icon className="w-5 h-5" />
+                {type.label}
+              </button>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </RevealOnScroll>
 
-      {/* Contact CTA */}
-      <section id="contact" className="py-16 bg-white text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Home?</h2>
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
-          <a href="tel:+254725604549" className="px-8 py-4 bg-emerald-600 text-white rounded-xl">Call Us</a>
-          <a href="https://wa.me/254725604549" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-green-500 text-white rounded-xl">WhatsApp</a>
-          <a href="mailto:info@kenyahomes.co.ke" className="px-8 py-4 bg-gray-100 text-gray-700 rounded-xl">Email</a>
-        </div>
-      </section>
+      <RevealOnScroll delayMs={80}>
+        {/* Properties Grid */}
+        <section id="properties" className="py-16">
+          <div className="max-w-7xl mx-auto px-4">
+            {filteredProperties.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedProperties.map((property) => (
+                    <PropertyCard
+                      key={property.id}
+                      property={property}
+                      onFavorite={() => handleToggleFavorite(property)}
+                      isFavorite={isPropertySaved(property.id)}
+                      onClick={setSelectedProperty}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, index) => {
+                      const page = index + 1;
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`w-10 h-10 rounded-lg border ${
+                            currentPage === page
+                              ? 'bg-emerald-600 border-emerald-600 text-white'
+                              : 'border-gray-300 text-gray-700'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-gray-500">No properties found. Adjust your filters.</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </RevealOnScroll>
+
+      <RevealOnScroll delayMs={120}>
+        {/* Testimonials */}
+        <section className="py-16 bg-emerald-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What Our Clients Say</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {testimonials.map((testimonial) => (
+                <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+              ))}
+            </div>
+          </div>
+        </section>
+      </RevealOnScroll>
+
+      <RevealOnScroll delayMs={160}>
+        <ContactSection
+          userId={user?.id}
+          defaultName={user?.user_metadata?.full_name || ''}
+          defaultEmail={user?.email || ''}
+        />
+      </RevealOnScroll>
 
       <Footer />
 
@@ -244,8 +381,26 @@ const AppLayout: React.FC = () => {
       )}
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-      {showFavorites && <FavoritesModal favorites={savedProperties} onClose={() => setShowFavorites(false)} />}
-      {showInquiries && <InquiriesModal inquiries={inquiries} onClose={() => setShowInquiries(false)} />}
+      {showFavorites && (
+        <FavoritesModal
+          favorites={savedProperties}
+          loading={favoritesLoading}
+          onClose={() => setShowFavorites(false)}
+          onRemove={handleRemoveFavorite}
+          onViewProperty={handleViewFavoriteProperty}
+          isLoggedIn={!!user}
+          onShowAuth={() => setShowAuth(true)}
+        />
+      )}
+      {showInquiries && (
+        <InquiriesModal
+          inquiries={inquiries}
+          loading={inquiriesLoading}
+          isLoggedIn={!!user}
+          onClose={() => setShowInquiries(false)}
+          onShowAuth={() => setShowAuth(true)}
+        />
+      )}
     </div>
   );
 };

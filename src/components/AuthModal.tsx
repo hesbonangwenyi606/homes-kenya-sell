@@ -8,8 +8,8 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
-  const { signIn, signUp, signInWithGoogle } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -19,18 +19,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isLogin = mode === 'login';
+  const isSignup = mode === 'signup';
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await signIn(formData.email, formData.password);
-        if (error) throw error;
-      } else {
+      if (isSignup) {
         if (formData.password !== formData.confirmPassword) {
           throw new Error('Passwords do not match');
         }
@@ -39,6 +40,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
         }
         const { error } = await signUp(formData.email, formData.password, formData.name);
         if (error) throw error;
+        setSuccessMessage('You have been registered successfully. Please check your email to confirm your account.');
+      } else {
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) throw error;
+        setSuccessMessage('Redirecting you...');
       }
 
       setSuccess(true);
@@ -48,6 +54,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await resetPassword(formData.email);
+      if (error) throw error;
+      setSuccessMessage('Password reset link sent. Please check your email to continue.');
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || 'Unable to send reset link');
     } finally {
       setLoading(false);
     }
@@ -75,10 +98,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             <Home className="w-8 h-8" />
           </div>
           <h2 className="text-2xl font-bold mb-2">
-            {isLogin ? 'Welcome Back!' : 'Create Account'}
+            {mode === 'forgot' ? 'Reset Password' : isLogin ? 'Welcome Back!' : 'Create Account'}
           </h2>
           <p className="text-emerald-100">
-            {isLogin 
+            {mode === 'forgot'
+              ? 'Enter your email and we will send you a reset link'
+              : isLogin
               ? 'Sign in to access your saved properties and inquiries' 
               : 'Join KenyaHomes to save your favorite properties'}
           </p>
@@ -93,14 +118,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {isLogin ? 'Welcome back!' : 'Account Created!'}
+                {mode === 'forgot' ? 'Reset Link Sent' : isLogin ? 'Welcome back!' : 'Account Created!'}
               </h3>
-              <p className="text-gray-600">
-                {isLogin ? 'Redirecting you...' : 'Please check your email to verify your account.'}
-              </p>
+              <p className="text-gray-600">{successMessage}</p>
+              {mode === 'forgot' && (
+                <button
+                  onClick={() => {
+                    setMode('login');
+                    setSuccess(false);
+                    setSuccessMessage('');
+                  }}
+                  className="mt-6 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                >
+                  Back to Sign In
+                </button>
+              )}
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={mode === 'forgot' ? handleForgotPasswordSubmit : handleAuthSubmit} className="space-y-4">
               {error && (
                 <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -108,7 +143,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 </div>
               )}
 
-              {!isLogin && (
+              {isSignup && (
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -134,26 +169,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 />
               </div>
 
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-12 pr-12 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+              {mode !== 'forgot' && (
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full pl-12 pr-12 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              )}
 
-              {!isLogin && (
+              {isSignup && (
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -173,9 +210,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                     <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
                     <span className="text-gray-600">Remember me</span>
                   </label>
-                  <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('forgot');
+                      setError(null);
+                    }}
+                    className="text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               )}
 
@@ -193,13 +237,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                     Processing...
                   </>
                 ) : (
-                  isLogin ? 'Sign In' : 'Create Account'
+                  mode === 'forgot' ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'
                 )}
               </button>
             </form>
           )}
 
-          {!success && (
+          {!success && mode !== 'forgot' && (
             <>
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
@@ -227,7 +271,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
                 <button
                   onClick={() => {
-                    setIsLogin(!isLogin);
+                    setMode(isLogin ? 'signup' : 'login');
                     setError(null);
                   }}
                   className="text-emerald-600 hover:text-emerald-700 font-semibold"
@@ -236,6 +280,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 </button>
               </p>
             </>
+          )}
+
+          {!success && mode === 'forgot' && (
+            <p className="text-center text-gray-600 mt-6">
+              Remembered your password?{' '}
+              <button
+                onClick={() => {
+                  setMode('login');
+                  setError(null);
+                }}
+                className="text-emerald-600 hover:text-emerald-700 font-semibold"
+              >
+                Back to Sign In
+              </button>
+            </p>
           )}
         </div>
       </div>

@@ -74,7 +74,7 @@ export const testimonials = [
     location: 'Westlands',
     image: '',
     rating: 5,
-    text: 'Excellent service from start to finish. The mortgage calculator helped us plan our budget, and the agents were incredibly helpful throughout the process.',
+    text: 'Excellent service from start to finish. The platform helped us plan our budget clearly, and the agents were incredibly helpful throughout the process.',
     propertyType: 'Apartment',
   },
   {

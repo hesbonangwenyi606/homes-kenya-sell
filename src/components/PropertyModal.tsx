@@ -1,12 +1,14 @@
-import React from 'react';
-import { X, MapPin, Bed, Bath, Square, Heart, Share2, Phone, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, MapPin, Bed, Bath, Square, Heart, Phone, MessageCircle } from 'lucide-react';
 import { Property } from './PropertyCard';
 
 interface PropertyModalProps {
   property: Property;
   onClose: () => void;
-  onFavorite: (property: Property) => void;
+  onFavorite: (property: Property) => Promise<void> | void;
   isFavorite: boolean;
+  isLoggedIn: boolean;
+  onSubmitInquiry: (formData: { name: string; email: string; phone: string; message: string }) => Promise<void>;
 }
 
 const PropertyModal: React.FC<PropertyModalProps> = ({
@@ -14,9 +16,34 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
   onClose,
   onFavorite,
   isFavorite,
+  isLoggedIn,
+  onSubmitInquiry,
 }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: `I am interested in "${property.title}" in ${property.location}.`,
+  });
+  const [submitting, setSubmitting] = useState(false);
+
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(price);
+
+  const handleSubmitInquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await onSubmitInquiry(formData);
+      setFormData((prev) => ({
+        ...prev,
+        phone: '',
+        message: `I am interested in "${property.title}" in ${property.location}.`,
+      }));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
@@ -30,6 +57,15 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
               className="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg"
             >
               <X className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+              onClick={() => onFavorite(property)}
+              className={`absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-colors ${
+                isFavorite ? 'bg-red-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-red-500 hover:text-white'
+              }`}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
           </div>
 
@@ -95,6 +131,55 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
               >
                 <MessageCircle className="w-5 h-5" /> WhatsApp
               </a>
+            </div>
+
+            {/* Inquiry Form */}
+            <div className="mt-6 border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Send Inquiry</h3>
+              {!isLoggedIn && (
+                <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+                  You can submit as guest, but sign in to track inquiry status in "My Inquiries".
+                </p>
+              )}
+              <form onSubmit={handleSubmitInquiry} className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone number (optional)"
+                  value={formData.phone}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <textarea
+                  rows={3}
+                  value={formData.message}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Sending Inquiry...' : 'Submit Inquiry'}
+                </button>
+              </form>
             </div>
           </div>
         </div>
