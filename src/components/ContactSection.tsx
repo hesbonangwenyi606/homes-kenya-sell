@@ -97,7 +97,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ userId, defaultName = '
             </p>
 
             <div className="space-y-3">
-              <a href="tel:+254700123456" className="flex items-center gap-3 p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-colors">
+              <a href="tel:+254 725 604 549" className="flex items-center gap-3 p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-colors">
                 <Phone className="w-5 h-5 text-emerald-300" />
                 <span>+254 700 123 456</span>
               </a>
