@@ -1,18 +1,18 @@
 import { Property } from '@/components/PropertyCard';
 
 export const properties: Property[] = [
-  {
-    id: 1,
-    title: 'Modern Villa in Karen',
-    location: 'Nairobi',
-    price: 85000000,
-    bedrooms: 5,
-    bathrooms: 4,
-    sqft: 5500,
-    type: 'house',
-    image: '/heme%20sales%201.jpeg',
-    featured: true,
-  },
+{
+  id: 1,
+  title: 'Modern Villa in Karen',
+  location: 'Nairobi',
+  price: 85000000,
+  bedrooms: 5,
+  bathrooms: 4,
+  landSize: '0.38 Ha',
+  type: 'house',
+  image: '/heme%20sales%201.jpeg',
+  featured: true,
+},
   {
     id: 2,
     title: 'Luxury Apartment in Westlands',
