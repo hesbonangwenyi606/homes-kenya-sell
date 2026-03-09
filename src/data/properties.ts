@@ -8,7 +8,7 @@ export const properties: Property[] = [
   price: 85000000,
   bedrooms: 5,
   bathrooms: 4,
-  landSize: '0.38 Ha',
+  landSize: 0.38, // hectares
   type: 'house',
   image: '/heme%20sales%201.jpeg',
   featured: true,
