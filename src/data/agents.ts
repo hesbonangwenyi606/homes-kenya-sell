@@ -89,7 +89,7 @@ export const testimonials = [
   {
     id: 4,
     name: 'Lucy Wambui',
-    location: 'Mombasa',
+    location: 'Thika Town',
     image: '',
     rating: 5,
     text: 'As a first-time buyer, I was nervous about the process. KenyaHomes guided me every step of the way. Now I own a beautiful bungalow by the coast!',
