@@ -222,7 +222,7 @@ const AppLayout: React.FC = () => {
               Find Your Dream <span className="text-emerald-400">Home in Kenya</span>
             </h1>
             <p className="text-xl mb-6">
-              Discover thousands of verified properties across Kenya. From luxury villas in Karen to beachfront homes in Mombasa.
+             Discover thousands of verified properties in our Quiver. From luxury villas, Apartments, Bungalows, Maisonettes or Town houses
             </p>
 
             {/* Search */}
