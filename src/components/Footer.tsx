@@ -44,7 +44,6 @@ const Footer: React.FC = () => {
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = [
     { name: 'About Us', path: '/about' },
-    { name: 'Our Agents', path: '/agents' },
     { name: 'Blog', path: '/blog' },
     { name: 'Careers', path: '/careers' },
     { name: 'FAQs', path: '/faqs' },
@@ -96,11 +95,11 @@ const Footer: React.FC = () => {
                 <Home className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Kenya<span className="text-emerald-400">Homes</span></h2>
+                <h2 className="text-xl font-bold">Hemaparim<span className="text-emerald-400">Homes</span></h2>
               </div>
             </div>
             <p className="text-gray-400 mb-6 max-w-sm">
-              Kenya's premier real estate platform. Find your dream home from thousands of verified listings across the country.
+              Hemaparin Homes. Find your dream home from thousands of verified listings in our Quiver.
             </p>
             <div className="flex gap-4 mt-6">
               <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors">
