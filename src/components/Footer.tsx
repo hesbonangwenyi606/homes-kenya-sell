@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
+import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
 import { useNewsletterSubscribers } from '@/hooks/useNewsletterSubscribers';
 import { useToast } from '@/hooks/use-toast';
 
@@ -41,13 +41,7 @@ const Footer: React.FC = () => {
 
   const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
-  const quickLinks = [
-    { name: 'About Us', path: '/about' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Careers', path: '/careers' },
-    { name: 'FAQs', path: '/faqs' },
-    { name: 'Contact', path: '/contact' },
-  ];
+  const quickLinks = ['About Us', 'Blog', 'Careers', 'FAQs', 'Contact'];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -121,12 +115,7 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Property Types</h4>
             <ul className="space-y-3">
               {propertyTypes.map((type) => (
-                <li key={type}>
-                  <span className="text-gray-400 flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
-                    {type}
-                  </span>
-                </li>
+                <li key={type} className="text-gray-400">{type}</li>
               ))}
             </ul>
           </div>
@@ -136,12 +125,7 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Locations</h4>
             <ul className="space-y-3">
               {locations.map((location) => (
-                <li key={location}>
-                  <span className="text-gray-400 flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
-                    {location}
-                  </span>
-                </li>
+                <li key={location} className="text-gray-400">{location}</li>
               ))}
             </ul>
           </div>
