@@ -11,6 +11,7 @@ export interface Property {
   landSize?: number; // hectares
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
+  images?: string[]; // gallery images
   featured?: boolean;
 }
 
@@ -73,6 +74,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onFavorite, isFav
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 sm:p-4">
           <p className="text-white text-lg sm:text-2xl font-bold">{formatPrice(property.price)}</p>
         </div>
+        {property.images && property.images.length > 0 && (
+          <div className="absolute bottom-8 sm:bottom-10 right-3 sm:right-4 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            {property.images.map((_, i) => (
+              <span key={i} className="w-1.5 h-1.5 rounded-full bg-white/50" />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="p-3 sm:p-5">

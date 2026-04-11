@@ -241,6 +241,20 @@
       "image": "https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572337743_f73af543.jpg",
       "created_at": "2025-01-01T00:00:00.000Z",
       "updated_at": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 19,
+      "title": "Modern Villa in Kiambu",
+      "location": "Kitengela",
+      "price": 5000000,
+      "bedrooms": 2,
+      "bathrooms": 3,
+      "landSize": 0.08,
+      "type": "house",
+      "image": "https://i.pinimg.com/1200x/6d/60/a2/6d60a267d5fb546f025c0fb5f7a5baae.jpg",
+      "featured": false,
+      "created_at": "2026-04-11T14:20:52.198Z",
+      "updated_at": "2026-04-11T14:20:52.198Z"
     }
   ]
 }
