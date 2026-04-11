@@ -36,8 +36,10 @@ router.get('/stats', (_req: AdminRequest, res: Response) => {
   const leads = db.get('leads').value();
   const inquiries = db.get('inquiries').value();
   const newsletter = db.get('newsletter').value();
+  const properties = db.get('properties').value();
 
   res.json({
+    properties: { total: properties.length, featured: properties.filter(p => p.featured).length },
     leads: { total: leads.length, byStatus: countByStatus(leads) },
     inquiries: { total: inquiries.length, byStatus: countByStatus(inquiries) },
     newsletter: { total: newsletter.length, byStatus: countByStatus(newsletter) },
@@ -99,6 +101,58 @@ router.patch('/inquiries/:id', (req: AdminRequest, res: Response) => {
 
   db.get('inquiries').find((i) => i.id === id).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
   res.json({ data: db.get('inquiries').find((i) => i.id === id).value() });
+});
+
+// ── Properties ────────────────────────────────────────────────────────────────
+
+const propertySchema = z.object({
+  title: z.string().min(1),
+  location: z.string().min(1),
+  price: z.number().positive(),
+  bedrooms: z.number().min(0),
+  bathrooms: z.number().min(0),
+  landSize: z.number().nullable().optional(),
+  type: z.enum(['house', 'apartment', 'land', 'bungalow']),
+  image: z.string().min(1),
+  featured: z.boolean().optional(),
+});
+
+router.get('/properties', (req: AdminRequest, res: Response) => {
+  const { page = '1', limit = '20' } = req.query as Record<string, string>;
+  const pageNum = Number(page), limitNum = Number(limit);
+  const rows = db.get('properties').orderBy('id', 'desc').value();
+  res.json({ data: rows.slice((pageNum - 1) * limitNum, pageNum * limitNum), total: rows.length, page: pageNum, limit: limitNum });
+});
+
+router.post('/properties', (req: AdminRequest, res: Response) => {
+  const parsed = propertySchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data', details: parsed.error.errors }); return; }
+
+  const all = db.get('properties').value();
+  const nextId = all.length > 0 ? Math.max(...all.map((p) => p.id)) + 1 : 1;
+  const now = new Date().toISOString();
+  const property = { id: nextId, ...parsed.data, created_at: now, updated_at: now };
+
+  db.get('properties').push(property).write();
+  res.status(201).json({ data: property });
+});
+
+router.patch('/properties/:id', (req: AdminRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const parsed = propertySchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+
+  const existing = db.get('properties').find((p) => p.id === id).value();
+  if (!existing) { res.status(404).json({ error: 'Property not found' }); return; }
+
+  db.get('properties').find((p) => p.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('properties').find((p) => p.id === id).value() });
+});
+
+router.delete('/properties/:id', (req: AdminRequest, res: Response) => {
+  const id = Number(req.params.id);
+  db.get('properties').remove((p) => p.id === id).write();
+  res.status(204).send();
 });
 
 // ── Newsletter ────────────────────────────────────────────────────────────────

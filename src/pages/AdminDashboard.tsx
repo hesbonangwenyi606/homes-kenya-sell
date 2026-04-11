@@ -32,6 +32,10 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  Pencil,
+  Building2,
+  Star,
 } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -45,10 +49,33 @@ interface AdminSession {
 }
 
 interface Stats {
+  properties: { total: number; featured: number };
   leads: { total: number; byStatus: Record<string, number> };
   inquiries: { total: number; byStatus: Record<string, number> };
   newsletter: { total: number; byStatus: Record<string, number> };
 }
+
+interface AdminProperty {
+  id: number;
+  title: string;
+  location: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  landSize?: number | null;
+  type: 'house' | 'apartment' | 'land' | 'bungalow';
+  image: string;
+  featured?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+const PROPERTY_TYPES = ['house', 'apartment', 'bungalow', 'land'] as const;
+
+const BLANK_PROP_FORM = {
+  title: '', location: '', price: '', bedrooms: '0', bathrooms: '0',
+  landSize: '', type: 'house' as const, image: '', featured: false,
+};
 
 interface Lead {
   id: string;
@@ -445,6 +472,226 @@ const InquiriesTab: React.FC<{ token: string }> = ({ token }) => {
   );
 };
 
+// ── Properties tab ───────────────────────────────────────────────────────────
+
+const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = ({ token, onStatsRefresh }) => {
+  const [properties, setProperties] = useState<AdminProperty[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<AdminProperty | null>(null);
+  const [form, setForm] = useState({ ...BLANK_PROP_FORM });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/properties?page=${page}&limit=15`, { headers: authHeaders(token) });
+      const data = await res.json();
+      setProperties(data.data ?? []);
+      setTotal(data.total ?? 0);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, page]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ ...BLANK_PROP_FORM });
+    setFormError('');
+    setShowForm(true);
+  };
+
+  const openEdit = (p: AdminProperty) => {
+    setEditing(p);
+    setForm({
+      title: p.title, location: p.location, price: String(p.price),
+      bedrooms: String(p.bedrooms), bathrooms: String(p.bathrooms),
+      landSize: p.landSize != null ? String(p.landSize) : '',
+      type: p.type, image: p.image, featured: p.featured ?? false,
+    });
+    setFormError('');
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.location.trim() || !form.price || !form.image.trim()) {
+      setFormError('Title, location, price and image are required.');
+      return;
+    }
+    setSaving(true);
+    setFormError('');
+    const body = {
+      title: form.title.trim(),
+      location: form.location.trim(),
+      price: Number(form.price),
+      bedrooms: Number(form.bedrooms),
+      bathrooms: Number(form.bathrooms),
+      landSize: form.landSize ? Number(form.landSize) : null,
+      type: form.type,
+      image: form.image.trim(),
+      featured: form.featured,
+    };
+    try {
+      const url = editing
+        ? `${API}/api/admin/properties/${editing.id}`
+        : `${API}/api/admin/properties`;
+      const res = await fetch(url, {
+        method: editing ? 'PATCH' : 'POST',
+        headers: authHeaders(token),
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Save failed'); return; }
+      setShowForm(false);
+      load();
+      onStatsRefresh();
+    } catch {
+      setFormError('Network error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: number, title: string) => {
+    if (!confirm(`Delete "${title}"?`)) return;
+    await fetch(`${API}/api/admin/properties/${id}`, { method: 'DELETE', headers: authHeaders(token) });
+    load();
+    onStatsRefresh();
+  };
+
+  const field = (key: keyof typeof form, label: string, type = 'text', placeholder = '') => (
+    <div>
+      <label className="text-xs text-gray-400 mb-1 block">{label}</label>
+      <input
+        type={type}
+        value={form[key] as string}
+        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+      />
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <Plus className="w-4 h-4 mr-1.5" /> Add Property
+        </Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300">
+          <RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh
+        </Button>
+      </div>
+
+      {/* Add / Edit form */}
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-4">
+          <h3 className="text-white font-semibold">{editing ? 'Edit Property' : 'New Property'}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {field('title', 'Title *', 'text', 'Modern Villa in Karen')}
+            {field('location', 'Location *', 'text', 'Nairobi')}
+            {field('price', 'Price (KES) *', 'number', '85000000')}
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Type</label>
+              <select
+                value={form.type}
+                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as typeof form.type }))}
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white text-sm"
+              >
+                {PROPERTY_TYPES.map((t) => <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+              </select>
+            </div>
+            {field('bedrooms', 'Bedrooms', 'number', '3')}
+            {field('bathrooms', 'Bathrooms', 'number', '2')}
+            {field('landSize', 'Land Size (ha)', 'number', '0.05')}
+            <div className="sm:col-span-2 lg:col-span-2">
+              {field('image', 'Image URL *', 'text', 'https://…')}
+            </div>
+            <div className="flex items-center gap-2 pt-5">
+              <input
+                type="checkbox"
+                id="featured"
+                checked={form.featured}
+                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                className="w-4 h-4 accent-emerald-500"
+              />
+              <label htmlFor="featured" className="text-sm text-gray-300">Featured listing</label>
+            </div>
+          </div>
+          {formError && <p className="text-red-400 text-sm">{formError}</p>}
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              {saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Property'}
+            </Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-gray-700 overflow-hidden">
+        <Table>
+          <TableHeader className="bg-gray-800">
+            <TableRow className="border-gray-700 hover:bg-gray-800">
+              <TableHead className="text-gray-400">Property</TableHead>
+              <TableHead className="text-gray-400 hidden md:table-cell">Price</TableHead>
+              <TableHead className="text-gray-400 hidden lg:table-cell">Type</TableHead>
+              <TableHead className="text-gray-400 hidden xl:table-cell">Beds/Baths</TableHead>
+              <TableHead className="text-gray-400">Featured</TableHead>
+              <TableHead className="text-gray-400 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={6} className="text-center text-gray-500 py-10">Loading…</TableCell></TableRow>
+            ) : properties.length === 0 ? (
+              <TableRow><TableCell colSpan={6} className="text-center text-gray-500 py-10">No properties. Click "Add Property" to start.</TableCell></TableRow>
+            ) : properties.map((p) => (
+              <TableRow key={p.id} className="border-gray-700 hover:bg-gray-800/50">
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <img src={p.image} alt={p.title} className="w-12 h-9 object-cover rounded-lg flex-shrink-0 bg-gray-700" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-white font-medium text-sm">{p.title}</p>
+                      <p className="text-gray-400 text-xs">{p.location}</p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="hidden md:table-cell text-emerald-400 font-medium text-sm">
+                  {fmt(p.price)}
+                </TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 capitalize">{p.type}</span>
+                </TableCell>
+                <TableCell className="hidden xl:table-cell text-gray-400 text-sm">
+                  {p.bedrooms}bd / {p.bathrooms}ba
+                </TableCell>
+                <TableCell>
+                  {p.featured ? <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> : <span className="text-gray-600 text-xs">—</span>}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => openEdit(p)} className="h-7 w-7 p-0 text-gray-400 hover:text-white">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => handleDelete(p.id, p.title)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <Pagination page={page} total={total} limit={15} onChange={setPage} />
+    </div>
+  );
+};
+
 // ── Newsletter tab ────────────────────────────────────────────────────────────
 
 const NewsletterTab: React.FC<{ token: string }> = ({ token }) => {
@@ -611,22 +858,19 @@ const AdminDashboard: React.FC = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard title="Properties" value={stats?.properties.total ?? 0} sub={`${stats?.properties.featured ?? 0} featured`} icon={Building2} color="bg-emerald-600" />
             <StatCard title="Total Leads" value={stats?.leads.total ?? 0} sub={`${stats?.leads.byStatus?.new ?? 0} new`} icon={Users} color="bg-blue-600" />
             <StatCard title="Inquiries" value={stats?.inquiries.total ?? 0} sub={`${stats?.inquiries.byStatus?.pending ?? 0} pending`} icon={FileText} color="bg-purple-600" />
-            <StatCard title="Newsletter" value={stats?.newsletter.total ?? 0} sub={`${stats?.newsletter.byStatus?.active ?? 0} active`} icon={Mail} color="bg-emerald-600" />
-            <StatCard
-              title="Conversion Rate"
-              value={stats && stats.leads.total > 0 ? Math.round(((stats.leads.byStatus?.qualified ?? 0) / stats.leads.total) * 100) : 0}
-              sub="% of leads qualified"
-              icon={BarChart3}
-              color="bg-orange-600"
-            />
+            <StatCard title="Newsletter" value={stats?.newsletter.total ?? 0} sub={`${stats?.newsletter.byStatus?.active ?? 0} active`} icon={Mail} color="bg-teal-600" />
           </div>
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="leads">
+        <Tabs defaultValue="properties">
           <TabsList className="bg-gray-800 border border-gray-700">
+            <TabsTrigger value="properties" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
+              Properties <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.properties.total ?? 0}</Badge>
+            </TabsTrigger>
             <TabsTrigger value="leads" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
               Leads <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.leads.total ?? 0}</Badge>
             </TabsTrigger>
@@ -638,6 +882,9 @@ const AdminDashboard: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="properties" className="mt-6">
+            <PropertiesTab token={session.access_token} onStatsRefresh={() => loadStats(session.access_token)} />
+          </TabsContent>
           <TabsContent value="leads" className="mt-6">
             <LeadsTab token={session.access_token} />
           </TabsContent>

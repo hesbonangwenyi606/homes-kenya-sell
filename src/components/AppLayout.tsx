@@ -23,7 +23,8 @@ import RevealOnScroll from './RevealOnScroll';
 import AuthModal from './AuthModal';
 import FavoritesModal from './FavoritesModal';
 import InquiriesModal from './InquiriesModal';
-import { properties, locations, priceRanges, bedroomOptions } from '@/data/properties';
+import { priceRanges, bedroomOptions } from '@/data/properties';
+import { useProperties } from '@/hooks/useProperties';
 import { testimonials } from '@/data/agents';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedProperties } from '@/hooks/useSavedProperties';
@@ -35,8 +36,13 @@ const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, signOut } = useAuth();
+  const { properties } = useProperties();
   const { savedProperties, loading: favoritesLoading, toggleSaveProperty, unsaveProperty, isPropertySaved } = useSavedProperties(user?.id);
   const { inquiries, loading: inquiriesLoading, submitInquiry } = usePropertyInquiries(user?.id);
+
+  const locations = ['All Locations', ...Array.from(new Set(
+    properties.flatMap((p) => p.location.split(',').map((l) => l.trim()))
+  )).sort()];
 
   // States
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,7 +117,7 @@ const AppLayout: React.FC = () => {
     }
 
     return result;
-  }, [searchQuery, selectedType, selectedLocation, selectedPriceRange, selectedBedrooms, sortBy]);
+  }, [properties, searchQuery, selectedType, selectedLocation, selectedPriceRange, selectedBedrooms, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProperties.length / ITEMS_PER_PAGE));
   const paginatedProperties = useMemo(() => {
@@ -252,7 +258,6 @@ const AppLayout: React.FC = () => {
                   onChange={(e) => setSelectedLocation(e.target.value)}
                   className="px-4 py-4 rounded-xl bg-gray-50 text-gray-900 cursor-pointer"
                 >
-                  <option value="All Locations">All Locations</option>
                   {locations.map((loc) => (
                     <option key={loc} value={loc}>{loc}</option>
                   ))}
