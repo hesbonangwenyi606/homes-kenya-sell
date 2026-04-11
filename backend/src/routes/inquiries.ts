@@ -1,7 +1,8 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
-import { supabaseAdmin } from '../lib/supabase';
-import { requireAuth, optionalAuth, AuthRequest } from '../middleware/auth';
+import { v4 as uuid } from 'uuid';
+import db, { Inquiry } from '../lib/db';
+import { optionalAuth, requireAuth, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -17,65 +18,43 @@ const inquirySchema = z.object({
   message: z.string().optional(),
 });
 
-// POST /api/inquiries — anyone can submit an inquiry
-router.post('/', optionalAuth, async (req: AuthRequest, res: Response) => {
+router.post('/', optionalAuth, (req: AuthRequest, res: Response) => {
   const parsed = inquirySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid input', details: parsed.error.flatten() });
     return;
   }
 
-  const payload = {
+  const now = new Date().toISOString();
+  const inquiry: Inquiry = {
+    id: uuid(),
     ...parsed.data,
-    user_id: req.user?.id ?? null,
+    agent_id: parsed.data.agent_id ?? null,
+    agent_name: parsed.data.agent_name ?? null,
+    inquirer_phone: parsed.data.inquirer_phone ?? null,
+    message: parsed.data.message ?? null,
+    status: 'pending',
+    created_at: now,
+    updated_at: now,
   };
 
-  const { data, error } = await supabaseAdmin
-    .from('property_inquiries')
-    .insert(payload)
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Insert inquiry error:', error);
-    res.status(500).json({ error: 'Failed to submit inquiry' });
-    return;
-  }
-
-  res.status(201).json({ data });
+  db.get('inquiries').push(inquiry).write();
+  res.status(201).json({ data: inquiry });
 });
 
-// GET /api/inquiries — authenticated users see their own inquiries
-router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
-  const { data, error } = await supabaseAdmin
-    .from('property_inquiries')
-    .select('*')
-    .eq('user_id', req.user!.id)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Fetch inquiries error:', error);
-    res.status(500).json({ error: 'Failed to fetch inquiries' });
-    return;
-  }
-
+// GET own inquiries by email
+router.get('/', requireAuth, (req: AuthRequest, res: Response) => {
+  const data = db.get('inquiries')
+    .filter((i) => i.inquirer_email.toLowerCase() === req.userEmail!)
+    .orderBy('created_at', 'desc')
+    .value();
   res.json({ data });
 });
 
-// DELETE /api/inquiries/:id — owner only
-router.delete('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
-  const { error } = await supabaseAdmin
-    .from('property_inquiries')
-    .delete()
-    .eq('id', req.params.id)
-    .eq('user_id', req.user!.id);
-
-  if (error) {
-    console.error('Delete inquiry error:', error);
-    res.status(500).json({ error: 'Failed to delete inquiry' });
-    return;
-  }
-
+router.delete('/:id', requireAuth, (req: AuthRequest, res: Response) => {
+  db.get('inquiries')
+    .remove((i) => i.id === req.params.id && i.inquirer_email.toLowerCase() === req.userEmail!)
+    .write();
   res.status(204).send();
 });
 

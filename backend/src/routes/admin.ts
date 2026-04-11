@@ -1,247 +1,111 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { supabaseAuth, supabaseAdmin } from '../lib/supabase';
-import { requireAdmin } from '../middleware/adminAuth';
+import db from '../lib/db';
+import { signAdminToken } from '../lib/jwtAuth';
+import { requireAdmin, AdminRequest } from '../middleware/adminAuth';
 
 const router = Router();
 
-// All admin routes require admin auth
-router.use(requireAdmin);
-
 // ── POST /api/admin/login ─────────────────────────────────────────────────────
-// Exchange email + password for a Supabase session (access_token + refresh_token).
-// The client then passes access_token as Bearer token on subsequent requests.
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-});
+const loginSchema = z.object({ email: z.string().email(), password: z.string().min(1) });
 
-// This route intentionally skips requireAdmin — it IS the login endpoint.
-// We re-export it as a standalone handler mounted before the router.use(requireAdmin) guard.
 export async function adminLogin(req: Request, res: Response) {
   const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: 'email and password are required' });
-    return;
-  }
+  if (!parsed.success) { res.status(400).json({ error: 'email and password are required' }); return; }
 
   const { email, password } = parsed.data;
+  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? '').toLowerCase();
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
 
-  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((e) => e.trim().toLowerCase());
-
-  if (!adminEmails.includes(email.toLowerCase())) {
-    res.status(403).json({ error: 'Not an admin account' });
+  if (email.toLowerCase() !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    res.status(401).json({ error: 'Invalid credentials' });
     return;
   }
 
-  const { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password });
-
-  if (error || !data.session) {
-    res.status(401).json({ error: error?.message ?? 'Invalid credentials' });
-    return;
-  }
-
-  res.json({
-    access_token: data.session.access_token,
-    refresh_token: data.session.refresh_token,
-    expires_at: data.session.expires_at,
-    user: { id: data.user.id, email: data.user.email },
-  });
+  res.json({ access_token: signAdminToken(email), user: { email } });
 }
 
-// ── GET /api/admin/stats ──────────────────────────────────────────────────────
-router.get('/stats', async (_req, res: Response) => {
-  const [leads, inquiries, newsletter] = await Promise.all([
-    supabaseAdmin.from('contact_leads').select('status', { count: 'exact', head: false }),
-    supabaseAdmin.from('property_inquiries').select('status', { count: 'exact', head: false }),
-    supabaseAdmin.from('newsletter_subscribers').select('status', { count: 'exact', head: false }),
-  ]);
+// All routes below require admin JWT
+router.use(requireAdmin);
 
-  const countByStatus = (rows: { status: string }[] | null) =>
-    (rows ?? []).reduce<Record<string, number>>((acc, r) => {
-      acc[r.status] = (acc[r.status] ?? 0) + 1;
-      return acc;
-    }, {});
+// ── GET /api/admin/stats ──────────────────────────────────────────────────────
+router.get('/stats', (_req: AdminRequest, res: Response) => {
+  const countByStatus = (rows: { status: string }[]) =>
+    rows.reduce<Record<string, number>>((acc, r) => { acc[r.status] = (acc[r.status] ?? 0) + 1; return acc; }, {});
+
+  const leads = db.get('leads').value();
+  const inquiries = db.get('inquiries').value();
+  const newsletter = db.get('newsletter').value();
 
   res.json({
-    leads: {
-      total: leads.data?.length ?? 0,
-      byStatus: countByStatus(leads.data),
-    },
-    inquiries: {
-      total: inquiries.data?.length ?? 0,
-      byStatus: countByStatus(inquiries.data),
-    },
-    newsletter: {
-      total: newsletter.data?.length ?? 0,
-      byStatus: countByStatus(newsletter.data),
-    },
+    leads: { total: leads.length, byStatus: countByStatus(leads) },
+    inquiries: { total: inquiries.length, byStatus: countByStatus(inquiries) },
+    newsletter: { total: newsletter.length, byStatus: countByStatus(newsletter) },
   });
 });
 
 // ── Contact Leads ─────────────────────────────────────────────────────────────
+router.get('/leads', (req: AdminRequest, res: Response) => {
+  const { status, page = '1', limit = '20' } = req.query as Record<string, string>;
+  const pageNum = Number(page), limitNum = Number(limit);
 
-// GET /api/admin/leads?status=new&page=1&limit=20
-router.get('/leads', async (req: Request, res: Response) => {
-  const { status, page = '1', limit = '20' } = req.query;
-  const from = (Number(page) - 1) * Number(limit);
-  const to = from + Number(limit) - 1;
+  let rows = db.get('leads').orderBy('created_at', 'desc').value();
+  if (status && status !== 'all') rows = rows.filter(r => r.status === status);
 
-  let query = supabaseAdmin
-    .from('contact_leads')
-    .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  if (status && typeof status === 'string') query = query.eq('status', status);
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to fetch leads' });
-    return;
-  }
-
-  res.json({ data, total: count, page: Number(page), limit: Number(limit) });
+  res.json({ data: rows.slice((pageNum - 1) * limitNum, pageNum * limitNum), total: rows.length, page: pageNum, limit: limitNum });
 });
 
-// GET /api/admin/leads/:id
-router.get('/leads/:id', async (req: Request, res: Response) => {
-  const { data, error } = await supabaseAdmin
-    .from('contact_leads')
-    .select('*')
-    .eq('id', req.params.id)
-    .single();
-
-  if (error || !data) {
-    res.status(404).json({ error: 'Lead not found' });
-    return;
-  }
-
-  res.json({ data });
+router.get('/leads/:id', (req: AdminRequest, res: Response) => {
+  const row = db.get('leads').find({ id: req.params.id }).value();
+  if (!row) { res.status(404).json({ error: 'Lead not found' }); return; }
+  res.json({ data: row });
 });
 
-// PATCH /api/admin/leads/:id — update status
-const leadStatusSchema = z.object({
-  status: z.enum(['new', 'assigned', 'contacted', 'qualified', 'closed']),
-});
+const leadStatusSchema = z.object({ status: z.enum(['new','assigned','contacted','qualified','closed']) });
 
-router.patch('/leads/:id', async (req: Request, res: Response) => {
+router.patch('/leads/:id', (req: AdminRequest, res: Response) => {
   const parsed = leadStatusSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: 'Invalid status value', details: parsed.error.flatten() });
-    return;
-  }
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid status' }); return; }
 
-  const { data, error } = await supabaseAdmin
-    .from('contact_leads')
-    .update({ status: parsed.data.status })
-    .eq('id', req.params.id)
-    .select()
-    .single();
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to update lead' });
-    return;
-  }
-
-  res.json({ data });
+  db.get('leads').find({ id: req.params.id }).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('leads').find({ id: req.params.id }).value() });
 });
 
-// DELETE /api/admin/leads/:id
-router.delete('/leads/:id', async (req: Request, res: Response) => {
-  const { error } = await supabaseAdmin
-    .from('contact_leads')
-    .delete()
-    .eq('id', req.params.id);
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to delete lead' });
-    return;
-  }
-
+router.delete('/leads/:id', (req: AdminRequest, res: Response) => {
+  db.get('leads').remove({ id: req.params.id }).write();
   res.status(204).send();
 });
 
 // ── Property Inquiries ────────────────────────────────────────────────────────
+router.get('/inquiries', (req: AdminRequest, res: Response) => {
+  const { status, page = '1', limit = '20' } = req.query as Record<string, string>;
+  const pageNum = Number(page), limitNum = Number(limit);
 
-// GET /api/admin/inquiries?status=pending&page=1&limit=20
-router.get('/inquiries', async (req: Request, res: Response) => {
-  const { status, page = '1', limit = '20' } = req.query;
-  const from = (Number(page) - 1) * Number(limit);
-  const to = from + Number(limit) - 1;
+  let rows = db.get('inquiries').orderBy('created_at', 'desc').value();
+  if (status && status !== 'all') rows = rows.filter(r => r.status === status);
 
-  let query = supabaseAdmin
-    .from('property_inquiries')
-    .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  if (status && typeof status === 'string') query = query.eq('status', status);
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to fetch inquiries' });
-    return;
-  }
-
-  res.json({ data, total: count, page: Number(page), limit: Number(limit) });
+  res.json({ data: rows.slice((pageNum - 1) * limitNum, pageNum * limitNum), total: rows.length, page: pageNum, limit: limitNum });
 });
 
-// PATCH /api/admin/inquiries/:id — update status
-const inquiryStatusSchema = z.object({
-  status: z.enum(['pending', 'contacted', 'resolved', 'closed']),
-});
+const inquiryStatusSchema = z.object({ status: z.enum(['pending','contacted','resolved','closed']) });
 
-router.patch('/inquiries/:id', async (req: Request, res: Response) => {
+router.patch('/inquiries/:id', (req: AdminRequest, res: Response) => {
   const parsed = inquiryStatusSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: 'Invalid status value', details: parsed.error.flatten() });
-    return;
-  }
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid status' }); return; }
 
-  const { data, error } = await supabaseAdmin
-    .from('property_inquiries')
-    .update({ status: parsed.data.status })
-    .eq('id', req.params.id)
-    .select()
-    .single();
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to update inquiry' });
-    return;
-  }
-
-  res.json({ data });
+  db.get('inquiries').find({ id: req.params.id }).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('inquiries').find({ id: req.params.id }).value() });
 });
 
-// ── Newsletter Subscribers ────────────────────────────────────────────────────
+// ── Newsletter ────────────────────────────────────────────────────────────────
+router.get('/newsletter', (req: AdminRequest, res: Response) => {
+  const { status, page = '1', limit = '20' } = req.query as Record<string, string>;
+  const pageNum = Number(page), limitNum = Number(limit);
 
-// GET /api/admin/newsletter?status=active&page=1&limit=20
-router.get('/newsletter', async (req: Request, res: Response) => {
-  const { status, page = '1', limit = '20' } = req.query;
-  const from = (Number(page) - 1) * Number(limit);
-  const to = from + Number(limit) - 1;
+  let rows = db.get('newsletter').orderBy('created_at', 'desc').value();
+  if (status && status !== 'all') rows = rows.filter(r => r.status === status);
 
-  let query = supabaseAdmin
-    .from('newsletter_subscribers')
-    .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  if (status && typeof status === 'string') query = query.eq('status', status);
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    res.status(500).json({ error: 'Failed to fetch subscribers' });
-    return;
-  }
-
-  res.json({ data, total: count, page: Number(page), limit: Number(limit) });
+  res.json({ data: rows.slice((pageNum - 1) * limitNum, pageNum * limitNum), total: rows.length, page: pageNum, limit: limitNum });
 });
 
 export default router;
