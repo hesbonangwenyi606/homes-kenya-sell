@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.join(__dirname, '../.env') });
 import express from 'express';
 import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler';
@@ -50,7 +52,8 @@ app.use(errorHandler);
 // ── Start ──────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`\n✅ Server running on http://localhost:${PORT}`);
-  console.log(`   Database: SQLite (backend/data/hemaprin.db)\n`);
+  console.log(`   Admin email: ${process.env.ADMIN_EMAIL ?? '(not set — check backend/.env)'}`);
+  console.log(`   Database: JSON (backend/data/hemaprin.json)\n`);
 });
 
 export default app;

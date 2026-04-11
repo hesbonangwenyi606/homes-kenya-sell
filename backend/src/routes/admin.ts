@@ -14,10 +14,10 @@ export async function adminLogin(req: Request, res: Response) {
   if (!parsed.success) { res.status(400).json({ error: 'email and password are required' }); return; }
 
   const { email, password } = parsed.data;
-  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? '').toLowerCase();
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
+  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? '').trim().toLowerCase();
+  const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD ?? '').trim();
 
-  if (email.toLowerCase() !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+  if (email.trim().toLowerCase() !== ADMIN_EMAIL || password.trim() !== ADMIN_PASSWORD) {
     res.status(401).json({ error: 'Invalid credentials' });
     return;
   }
