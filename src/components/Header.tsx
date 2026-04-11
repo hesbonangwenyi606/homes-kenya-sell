@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Menu,
   X,
@@ -11,9 +12,12 @@ import {
   LogOut,
   FileText,
   Sun,
-  Moon
+  Moon,
+  LayoutDashboard,
 } from 'lucide-react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
 
 interface HeaderProps {
   favoritesCount: number;
@@ -34,6 +38,8 @@ const Header: React.FC<HeaderProps> = ({
   user,
   onSignOut
 }) => {
+  const navigate = useNavigate();
+  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -129,9 +135,18 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Desktop Navigation */}
           <nav ref={desktopNavRef} className="hidden lg:flex items-center gap-8">
-            <a href="#home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
-              Home
-            </a>
+            {isAdmin ? (
+              <button
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-medium transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4" /> Dashboard
+              </button>
+            ) : (
+              <a href="#home" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
+                Home
+              </a>
+            )}
             <Dropdown title="Properties" items={propertyTypes} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} type="icon" />
             <Dropdown title="Locations" items={locationsList} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
             <a href="#contact" className="text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
@@ -171,7 +186,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <MobileMenu propertyTypes={propertyTypes} locations={locationsList} user={user} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
+          <MobileMenu propertyTypes={propertyTypes} locations={locationsList} user={user} isAdmin={isAdmin} onNavigateAdmin={() => { navigate('/admin'); setMobileMenuOpen(false); }} favoritesCount={favoritesCount} onShowFavorites={onShowFavorites} onShowInquiries={onShowInquiries} onShowAuth={onShowAuth} onSignOut={onSignOut} closeMenu={() => setMobileMenuOpen(false)} />
         )}
       </div>
     </header>
@@ -253,7 +268,7 @@ const UserMenuButton = ({ icon: Icon, label, onClick, badge, textColor = 'text-g
 );
 
 // ------------------- Mobile Menu -------------------
-const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavorites, onShowInquiries, onShowAuth, onSignOut, closeMenu }) => {
+const MobileMenu = ({ propertyTypes, locations, user, isAdmin, onNavigateAdmin, favoritesCount, onShowFavorites, onShowInquiries, onShowAuth, onSignOut, closeMenu }) => {
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const Accordion = ({ title, items, type }) => {
@@ -282,7 +297,13 @@ const MobileMenu = ({ propertyTypes, locations, user, favoritesCount, onShowFavo
   return (
     <div className="lg:hidden border-t border-gray-100 dark:border-gray-700 py-4 animate-slideDownFade max-h-[80vh] overflow-y-auto">
       <nav className="flex flex-col gap-2">
-        <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
+        {isAdmin ? (
+          <button onClick={onNavigateAdmin} className="px-4 py-3 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium flex items-center gap-2 w-full text-left">
+            <LayoutDashboard className="w-4 h-4" /> Dashboard
+          </button>
+        ) : (
+          <a href="#home" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Home</a>
+        )}
         <Accordion title="Properties" items={propertyTypes} type="icon" />
         <Accordion title="Locations" items={locations} />
         <a href="#contact" onClick={closeMenu} className="px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded-lg font-medium">Contact</a>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   SlidersHorizontal,
@@ -31,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const AppLayout: React.FC = () => {
   const ITEMS_PER_PAGE = 6;
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { user, signOut } = useAuth();
   const { savedProperties, loading: favoritesLoading, toggleSaveProperty, unsaveProperty, isPropertySaved } = useSavedProperties(user?.id);
@@ -219,7 +221,14 @@ const AppLayout: React.FC = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-2xl text-white">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Find Your Dream <span className="text-emerald-400">Home in Kenya</span>
+              Find Your Dream{' '}
+              <span className="text-emerald-400">
+                <span
+                  onClick={() => navigate('/admin')}
+                  className="cursor-pointer select-none"
+                  title=""
+                >Home</span>{' '}in Kenya
+              </span>
             </h1>
             <p className="text-xl mb-6">
              Discover thousands of verified properties in our Quiver. From luxury villas, Apartments, Bungalows, Maisonettes or Town houses

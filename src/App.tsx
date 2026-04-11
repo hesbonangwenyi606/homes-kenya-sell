@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/AdminDashboard";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp"; // ✅ ADD THIS
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
