@@ -66,6 +66,7 @@ interface AdminProperty {
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
   images?: string[];
+  description?: string;
   featured?: boolean;
   created_at: string;
   updated_at: string;
@@ -75,7 +76,8 @@ const PROPERTY_TYPES = ['house', 'apartment', 'bungalow', 'land'] as const;
 
 const BLANK_PROP_FORM = {
   title: '', location: '', price: '', bedrooms: '0', bathrooms: '0',
-  landSize: '', type: 'house' as const, image: '', image2: '', image3: '', featured: false,
+  landSize: '', type: 'house' as const, image: '', image2: '', image3: '',
+  description: '', featured: false,
 };
 
 interface Lead {
@@ -140,6 +142,106 @@ const statusColor: Record<string, string> = {
   resolved: 'bg-green-100 text-green-700',
   active: 'bg-emerald-100 text-emerald-700',
   unsubscribed: 'bg-gray-100 text-gray-600',
+};
+
+// ── Image upload field ────────────────────────────────────────────────────────
+
+interface ImageUploadFieldProps {
+  label: string;
+  value: string;
+  onChange: (url: string) => void;
+  token: string;
+  required?: boolean;
+}
+
+const ImageUploadField: React.FC<ImageUploadFieldProps> = ({ label, value, onChange, token, required }) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`${API}/api/admin/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        onChange(`${API}${data.url}`);
+      } else {
+        setUploadError(data.error ?? 'Upload failed');
+      }
+    } catch {
+      setUploadError('Network error during upload');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  return (
+    <div>
+      <label className="text-xs text-gray-400 mb-1 block">{label}{required && ' *'}</label>
+      <div className="flex gap-2 items-start">
+        {value ? (
+          <img
+            src={value}
+            alt=""
+            className="w-14 h-12 object-cover rounded-lg border border-gray-600 flex-shrink-0 bg-gray-700"
+            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.3'; }}
+          />
+        ) : (
+          <div className="w-14 h-12 rounded-lg border border-dashed border-gray-600 flex-shrink-0 flex items-center justify-center bg-gray-800">
+            <span className="text-gray-600 text-lg">🖼</span>
+          </div>
+        )}
+        <div className="flex-1 space-y-1.5">
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => { setUploadError(''); onChange(e.target.value); }}
+            placeholder="Paste URL or upload below"
+            className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+          <div className="flex items-center gap-2">
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+            <button
+              type="button"
+              onClick={() => { setUploadError(''); fileRef.current?.click(); }}
+              disabled={uploading}
+              className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {uploading ? (
+                <>
+                  <span className="w-3 h-3 border-2 border-gray-400 border-t-emerald-400 rounded-full animate-spin inline-block" />
+                  Uploading…
+                </>
+              ) : (
+                '📁 Upload from computer'
+              )}
+            </button>
+            {value && (
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {uploadError && <p className="text-red-400 text-xs">{uploadError}</p>}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // ── Login screen ───────────────────────────────────────────────────────────────
@@ -516,6 +618,7 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
       type: p.type, image: p.image,
       image2: p.images?.[0] ?? '',
       image3: p.images?.[1] ?? '',
+      description: p.description ?? '',
       featured: p.featured ?? false,
     });
     setFormError('');
@@ -540,6 +643,7 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
       type: form.type,
       image: form.image.trim(),
       images: galleryImages.length > 0 ? galleryImages : undefined,
+      description: form.description.trim() || undefined,
       featured: form.featured,
     };
     try {
@@ -615,10 +719,40 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
             {field('bathrooms', 'Bathrooms', 'number', '2')}
             {field('landSize', 'Land Size (ha)', 'number', '0.05')}
             <div className="sm:col-span-2 lg:col-span-3">
-              {field('image', 'Main Image URL *', 'text', 'https://…')}
+              <ImageUploadField
+                label="Main Image"
+                value={form.image}
+                onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+                token={token}
+                required
+              />
             </div>
-            {field('image2', 'Gallery Image 2', 'text', 'https://…')}
-            {field('image3', 'Gallery Image 3', 'text', 'https://…')}
+            <div>
+              <ImageUploadField
+                label="Gallery Image 2"
+                value={form.image2}
+                onChange={(url) => setForm((f) => ({ ...f, image2: url }))}
+                token={token}
+              />
+            </div>
+            <div>
+              <ImageUploadField
+                label="Gallery Image 3"
+                value={form.image3}
+                onChange={(url) => setForm((f) => ({ ...f, image3: url }))}
+                token={token}
+              />
+            </div>
+            <div className="sm:col-span-2 lg:col-span-3">
+              <label className="text-xs text-gray-400 mb-1 block">Description</label>
+              <textarea
+                rows={4}
+                value={form.description}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                placeholder="Describe the property — location highlights, finishes, nearby amenities, access roads…"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
+              />
+            </div>
             <div className="flex items-center gap-2 pt-5">
               <input
                 type="checkbox"

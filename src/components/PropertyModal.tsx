@@ -114,12 +114,12 @@ const PropertyModal: React.FC<PropertyModalProps> = ({ property, onClose, onFavo
                 </div>
               </div>
             )}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Beautiful {property.type} located in the heart of {property.location}. This property offers modern amenities, excellent security, and is close to schools, shopping centers, and major transport links.
-              </p>
-            </div>
+            {(property.description) && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{property.description}</p>
+              </div>
+            )}
             <div className="flex gap-2 mt-4">
               <button onClick={() => { window.location.href = 'tel:0725604549'; }} className="flex-1 flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                 <Phone className="w-5 h-5 text-emerald-600" /> Call

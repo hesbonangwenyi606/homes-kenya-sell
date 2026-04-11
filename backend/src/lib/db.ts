@@ -14,6 +14,7 @@ export interface DBProperty {
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
   images?: string[];
+  description?: string;
   featured?: boolean;
   created_at: string;
   updated_at: string;

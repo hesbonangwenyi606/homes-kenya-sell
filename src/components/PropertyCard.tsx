@@ -12,6 +12,7 @@ export interface Property {
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
   images?: string[]; // gallery images
+  description?: string;
   featured?: boolean;
 }
 
