@@ -65,6 +65,7 @@ interface AdminProperty {
   landSize?: number | null;
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
+  images?: string[];
   featured?: boolean;
   created_at: string;
   updated_at: string;
@@ -74,7 +75,7 @@ const PROPERTY_TYPES = ['house', 'apartment', 'bungalow', 'land'] as const;
 
 const BLANK_PROP_FORM = {
   title: '', location: '', price: '', bedrooms: '0', bathrooms: '0',
-  landSize: '', type: 'house' as const, image: '', featured: false,
+  landSize: '', type: 'house' as const, image: '', image2: '', image3: '', featured: false,
 };
 
 interface Lead {
@@ -512,7 +513,10 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
       title: p.title, location: p.location, price: String(p.price),
       bedrooms: String(p.bedrooms), bathrooms: String(p.bathrooms),
       landSize: p.landSize != null ? String(p.landSize) : '',
-      type: p.type, image: p.image, featured: p.featured ?? false,
+      type: p.type, image: p.image,
+      image2: p.images?.[0] ?? '',
+      image3: p.images?.[1] ?? '',
+      featured: p.featured ?? false,
     });
     setFormError('');
     setShowForm(true);
@@ -525,6 +529,7 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
     }
     setSaving(true);
     setFormError('');
+    const galleryImages = [form.image2.trim(), form.image3.trim()].filter(Boolean);
     const body = {
       title: form.title.trim(),
       location: form.location.trim(),
@@ -534,6 +539,7 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
       landSize: form.landSize ? Number(form.landSize) : null,
       type: form.type,
       image: form.image.trim(),
+      images: galleryImages.length > 0 ? galleryImages : undefined,
       featured: form.featured,
     };
     try {
@@ -608,9 +614,11 @@ const PropertiesTab: React.FC<{ token: string; onStatsRefresh: () => void }> = (
             {field('bedrooms', 'Bedrooms', 'number', '3')}
             {field('bathrooms', 'Bathrooms', 'number', '2')}
             {field('landSize', 'Land Size (ha)', 'number', '0.05')}
-            <div className="sm:col-span-2 lg:col-span-2">
-              {field('image', 'Image URL *', 'text', 'https://…')}
+            <div className="sm:col-span-2 lg:col-span-3">
+              {field('image', 'Main Image URL *', 'text', 'https://…')}
             </div>
+            {field('image2', 'Gallery Image 2', 'text', 'https://…')}
+            {field('image3', 'Gallery Image 3', 'text', 'https://…')}
             <div className="flex items-center gap-2 pt-5">
               <input
                 type="checkbox"

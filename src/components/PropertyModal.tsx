@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, MapPin, Bed, Bath, Square, Heart, Phone, MessageCircle } from 'lucide-react';
+import { X, MapPin, Bed, Bath, Square, Heart, Phone, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Property } from './PropertyCard';
 
 interface PropertyModalProps {
@@ -12,8 +12,13 @@ interface PropertyModalProps {
 }
 
 const PropertyModal: React.FC<PropertyModalProps> = ({ property, onClose, onFavorite, isFavorite, isLoggedIn, onSubmitInquiry }) => {
+  const allImages = [property.image, ...(property.images ?? [])].filter(Boolean);
+  const [currentImg, setCurrentImg] = useState(0);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: `I am interested in "${property.title}" in ${property.location}.` });
   const [submitting, setSubmitting] = useState(false);
+
+  const prevImg = () => setCurrentImg((i) => (i - 1 + allImages.length) % allImages.length);
+  const nextImg = () => setCurrentImg((i) => (i + 1) % allImages.length);
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(price);
@@ -33,8 +38,41 @@ const PropertyModal: React.FC<PropertyModalProps> = ({ property, onClose, onFavo
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row h-full max-h-[90vh]">
-          <div className="lg:w-3/5 relative bg-gray-100">
-            <img src={property.image} alt={property.title} className="w-full h-64 lg:h-full object-cover" />
+          <div className="lg:w-3/5 relative bg-gray-100 overflow-hidden">
+            <img src={allImages[currentImg]} alt={property.title} className="w-full h-64 lg:h-full object-cover transition-opacity duration-300" />
+
+            {/* Carousel navigation */}
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={prevImg}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={nextImg}
+                  className="absolute right-14 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+                {/* Dots */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {allImages.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImg(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${i === currentImg ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`}
+                    />
+                  ))}
+                </div>
+                {/* Counter */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs px-2 py-1 rounded-full">
+                  {currentImg + 1} / {allImages.length}
+                </div>
+              </>
+            )}
+
             <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg">
               <X className="w-5 h-5 text-gray-700" />
             </button>

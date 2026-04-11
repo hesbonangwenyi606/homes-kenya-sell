@@ -13,6 +13,7 @@ export interface DBProperty {
   landSize?: number | null;
   type: 'house' | 'apartment' | 'land' | 'bungalow';
   image: string;
+  images?: string[];
   featured?: boolean;
   created_at: string;
   updated_at: string;

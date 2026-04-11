@@ -114,6 +114,7 @@ const propertySchema = z.object({
   landSize: z.number().nullable().optional(),
   type: z.enum(['house', 'apartment', 'land', 'bungalow']),
   image: z.string().min(1),
+  images: z.array(z.string()).optional(),
   featured: z.boolean().optional(),
 });
 
