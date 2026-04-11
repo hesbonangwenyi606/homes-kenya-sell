@@ -143,7 +143,11 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Locations</h4>
             <ul className="space-y-3">
               {locations.map((location) => (
-                <li key={location} className="text-gray-400">{location}</li>
+                <li key={location}>
+                  <Link to={`/?location=${location}`} className="text-gray-400 hover:text-emerald-400 transition-colors">
+                    {location}
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>
@@ -153,7 +157,11 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link} className="text-gray-400">{link}</li>
+                <li key={link.label}>
+                  <Link to={link.path} className="text-gray-400 hover:text-emerald-400 transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>
@@ -182,9 +190,9 @@ const Footer: React.FC = () => {
           </p>
 
           <div className="flex gap-6 text-sm">
-            <span className="text-gray-400">Privacy Policy</span>
-            <span className="text-gray-400">Terms of Service</span>
-            <span className="text-gray-400">Cookie Policy</span>
+            <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</Link>
+            <Link to="/cookie-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
