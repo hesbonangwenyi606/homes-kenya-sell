@@ -56,7 +56,8 @@ router.get('/leads', (req: AdminRequest, res: Response) => {
 });
 
 router.get('/leads/:id', (req: AdminRequest, res: Response) => {
-  const row = db.get('leads').find({ id: req.params.id }).value();
+  const id = String(req.params.id);
+  const row = db.get('leads').find((l) => l.id === id).value();
   if (!row) { res.status(404).json({ error: 'Lead not found' }); return; }
   res.json({ data: row });
 });
@@ -66,13 +67,15 @@ const leadStatusSchema = z.object({ status: z.enum(['new','assigned','contacted'
 router.patch('/leads/:id', (req: AdminRequest, res: Response) => {
   const parsed = leadStatusSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: 'Invalid status' }); return; }
+  const id = String(req.params.id);
 
-  db.get('leads').find({ id: req.params.id }).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
-  res.json({ data: db.get('leads').find({ id: req.params.id }).value() });
+  db.get('leads').find((l) => l.id === id).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('leads').find((l) => l.id === id).value() });
 });
 
 router.delete('/leads/:id', (req: AdminRequest, res: Response) => {
-  db.get('leads').remove({ id: req.params.id }).write();
+  const id = String(req.params.id);
+  db.get('leads').remove((l) => l.id === id).write();
   res.status(204).send();
 });
 
@@ -92,9 +95,10 @@ const inquiryStatusSchema = z.object({ status: z.enum(['pending','contacted','re
 router.patch('/inquiries/:id', (req: AdminRequest, res: Response) => {
   const parsed = inquiryStatusSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: 'Invalid status' }); return; }
+  const id = String(req.params.id);
 
-  db.get('inquiries').find({ id: req.params.id }).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
-  res.json({ data: db.get('inquiries').find({ id: req.params.id }).value() });
+  db.get('inquiries').find((i) => i.id === id).assign({ status: parsed.data.status, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('inquiries').find((i) => i.id === id).value() });
 });
 
 // ── Newsletter ────────────────────────────────────────────────────────────────

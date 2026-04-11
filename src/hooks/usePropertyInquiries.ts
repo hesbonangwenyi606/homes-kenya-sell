@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Property } from '@/components/PropertyCard';
+
+const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 export interface PropertyInquiry {
   id: string;
-  user_id: string | null;
   property_id: number;
   property_title: string;
   property_location: string;
@@ -26,39 +26,31 @@ export interface InquiryFormData {
   message?: string;
 }
 
-export function usePropertyInquiries(userId: string | undefined) {
+export function usePropertyInquiries(_userId: string | undefined) {
   const [inquiries, setInquiries] = useState<PropertyInquiry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInquiries = useCallback(async () => {
-    if (!userId) {
-      setInquiries([]);
-      setLoading(false);
-      return;
-    }
-
+  // Fetch inquiries for a given email (stored locally so user can see their own)
+  const fetchInquiries = useCallback(async (email?: string) => {
+    if (!email) { setInquiries([]); return; }
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('property_inquiries')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setInquiries(data || []);
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching inquiries:', err);
+      const res = await fetch(`${API}/api/inquiries`, {
+        headers: { 'X-User-Email': email },
+      });
+      const data = await res.json();
+      if (res.ok) setInquiries(data.data ?? []);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
-    fetchInquiries();
-  }, [fetchInquiries]);
+    // Inquiries are fetched on-demand via refetch(email) from the component
+  }, []);
 
   const submitInquiry = async (
     property: Property,
@@ -66,44 +58,35 @@ export function usePropertyInquiries(userId: string | undefined) {
     agent?: { id: number; name: string }
   ) => {
     try {
-      const { data, error } = await supabase
-        .from('property_inquiries')
-        .insert({
-          user_id: userId || null,
+      const res = await fetch(`${API}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           property_id: property.id,
           property_title: property.title,
           property_location: property.location,
-          agent_id: agent?.id || null,
-          agent_name: agent?.name || null,
+          agent_id: agent?.id ?? undefined,
+          agent_name: agent?.name ?? undefined,
           inquirer_name: formData.name,
           inquirer_email: formData.email,
-          inquirer_phone: formData.phone || null,
-          message: formData.message || null,
-          status: 'pending',
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      if (userId) {
-        setInquiries(prev => [data, ...prev]);
-      }
-      
-      return { data, error: null };
-    } catch (err: any) {
-      console.error('Error submitting inquiry:', err);
-      return { data: null, error: err };
+          inquirer_phone: formData.phone || undefined,
+          message: formData.message || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to submit inquiry');
+      setInquiries((prev) => [data.data, ...prev]);
+      return { data: data.data, error: null };
+    } catch (err: unknown) {
+      return { data: null, error: err as Error };
     }
   };
 
-  const getInquiryCountForProperty = (propertyId: number) => {
-    return inquiries.filter(i => i.property_id === propertyId).length;
-  };
+  const getInquiryCountForProperty = (propertyId: number) =>
+    inquiries.filter((i) => i.property_id === propertyId).length;
 
-  const hasInquiredAboutProperty = (propertyId: number) => {
-    return inquiries.some(i => i.property_id === propertyId);
-  };
+  const hasInquiredAboutProperty = (propertyId: number) =>
+    inquiries.some((i) => i.property_id === propertyId);
 
   return {
     inquiries,
