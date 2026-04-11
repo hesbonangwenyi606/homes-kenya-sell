@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send, ArrowRight } from 'lucide-react';
 import { useNewsletterSubscribers } from '@/hooks/useNewsletterSubscribers';
 import { useToast } from '@/hooks/use-toast';
 
@@ -123,13 +122,10 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {propertyTypes.map((type) => (
                 <li key={type}>
-                  <Link
-                    to={`/properties?type=${type}`}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span className="text-gray-400 flex items-center gap-2">
+                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
                     {type}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -141,13 +137,10 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {locations.map((location) => (
                 <li key={location}>
-                  <Link
-                    to={`/properties?location=${location}`}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span className="text-gray-400 flex items-center gap-2">
+                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
                     {location}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -159,13 +152,10 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.path}
-                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"
-                  >
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span className="text-gray-400 flex items-center gap-2">
+                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
                     {link.name}
-                  </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -195,9 +185,9 @@ const Footer: React.FC = () => {
           </p>
 
           <div className="flex gap-6 text-sm">
-            <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</Link>
-            <Link to="/cookie-policy" className="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</Link>
+            <span className="text-gray-400">Privacy Policy</span>
+            <span className="text-gray-400">Terms of Service</span>
+            <span className="text-gray-400">Cookie Policy</span>
           </div>
         </div>
       </div>
