@@ -19,8 +19,10 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:8080')
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (curl, Postman) or matching origins
       if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      // For unrecognised origins, still allow but without credentials
+      callback(null, false);
     },
     credentials: true,
   })
