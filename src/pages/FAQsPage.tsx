@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
-import { ChevronDown, HelpCircle, Phone, Mail } from 'lucide-react';
+import { ChevronDown, HelpCircle, Phone, Mail, ArrowLeft } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -29,6 +30,9 @@ const FAQsPage: React.FC = () => {
       {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 to-emerald-900 text-white py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-emerald-300 hover:text-white text-sm mb-8 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </Link>
           <div className="w-16 h-16 bg-emerald-600/40 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <HelpCircle className="w-8 h-8 text-emerald-300" />
           </div>

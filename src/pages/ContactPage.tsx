@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import ContactSection from '@/components/ContactSection';
-import { MapPin, Phone, Mail, Clock, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, ArrowLeft } from 'lucide-react';
 
 const ContactPage: React.FC = () => {
   return (
@@ -9,6 +10,9 @@ const ContactPage: React.FC = () => {
       {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 to-emerald-900 text-white py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-emerald-300 hover:text-white text-sm mb-8 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </Link>
           <div className="w-16 h-16 bg-emerald-600/40 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <MessageCircle className="w-8 h-8 text-emerald-300" />
           </div>

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
-import { Shield, Users, TrendingUp, Award, MapPin, Phone, Mail } from 'lucide-react';
+import { Shield, Users, TrendingUp, Award, MapPin, Phone, Mail, ArrowLeft } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
   const values = [
@@ -22,6 +23,9 @@ const AboutPage: React.FC = () => {
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-gray-900 to-emerald-900 text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-emerald-300 hover:text-white text-sm mb-8 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </Link>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">About Hemaprin Homes</h1>
           <p className="text-xl text-gray-300 leading-relaxed">
             We are Kenya's trusted real estate partner — connecting buyers, sellers, and investors with verified
