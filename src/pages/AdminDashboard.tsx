@@ -858,7 +858,7 @@ const AdminDashboard: React.FC = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title="Properties" value={stats?.properties.total ?? 0} sub={`${stats?.properties.featured ?? 0} featured`} icon={Building2} color="bg-emerald-600" />
+            <StatCard title="Properties" value={stats?.properties?.total ?? 0} sub={`${stats?.properties?.featured ?? 0} featured`} icon={Building2} color="bg-emerald-600" />
             <StatCard title="Total Leads" value={stats?.leads.total ?? 0} sub={`${stats?.leads.byStatus?.new ?? 0} new`} icon={Users} color="bg-blue-600" />
             <StatCard title="Inquiries" value={stats?.inquiries.total ?? 0} sub={`${stats?.inquiries.byStatus?.pending ?? 0} pending`} icon={FileText} color="bg-purple-600" />
             <StatCard title="Newsletter" value={stats?.newsletter.total ?? 0} sub={`${stats?.newsletter.byStatus?.active ?? 0} active`} icon={Mail} color="bg-teal-600" />
@@ -869,7 +869,7 @@ const AdminDashboard: React.FC = () => {
         <Tabs defaultValue="properties">
           <TabsList className="bg-gray-800 border border-gray-700">
             <TabsTrigger value="properties" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
-              Properties <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.properties.total ?? 0}</Badge>
+              Properties <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.properties?.total ?? 0}</Badge>
             </TabsTrigger>
             <TabsTrigger value="leads" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
               Leads <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.leads.total ?? 0}</Badge>
