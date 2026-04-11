@@ -908,6 +908,9 @@ const NewsletterTab: React.FC<{ token: string }> = ({ token }) => {
 interface FaqItem { id: string; question: string; answer: string; order: number; }
 interface BlogPost { id: string; title: string; excerpt: string; content: string; author: string; category: string; image: string; published: boolean; created_at: string; }
 interface JobOpening { id: string; title: string; department: string; location: string; type: string; description: string; requirements: string[]; active: boolean; }
+interface AboutTeamMember { id: string; name: string; role: string; location: string; order: number; }
+interface AboutValue { id: string; icon_name: string; title: string; desc: string; order: number; }
+interface AboutStat { id: string; value: string; label: string; order: number; }
 
 const BLANK_FAQ = { question: '', answer: '' };
 const BLANK_POST = { title: '', excerpt: '', content: '', author: '', category: 'Market Insights', image: '', published: true };
@@ -1157,13 +1160,273 @@ const CareersManager: React.FC<{ token: string }> = ({ token }) => {
   );
 };
 
+// ─ About: Team Manager ────────────────────────────────────────────────────────
+const BLANK_TEAM = { name: '', role: '', location: '' };
+const AboutTeamManager: React.FC<{ token: string }> = ({ token }) => {
+  const [items, setItems] = useState<AboutTeamMember[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<AboutTeamMember | null>(null);
+  const [form, setForm] = useState({ ...BLANK_TEAM });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const r = await fetch(`${API}/api/admin/about/team`, { headers: authHeaders(token) }); const d = await r.json(); setItems(d.data ?? []); } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setEditing(null); setForm({ ...BLANK_TEAM }); setShowForm(true); };
+  const openEdit = (m: AboutTeamMember) => { setEditing(m); setForm({ name: m.name, role: m.role, location: m.location }); setShowForm(true); };
+
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.role.trim()) return;
+    setSaving(true);
+    const url = editing ? `${API}/api/admin/about/team/${editing.id}` : `${API}/api/admin/about/team`;
+    await fetch(url, { method: editing ? 'PATCH' : 'POST', headers: authHeaders(token), body: JSON.stringify(form) });
+    setSaving(false); setShowForm(false); load();
+  };
+
+  const del = async (id: string) => {
+    if (!confirm('Delete this team member?')) return;
+    await fetch(`${API}/api/admin/about/team/${id}`, { method: 'DELETE', headers: authHeaders(token) }); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="w-4 h-4 mr-1.5" /> Add Member</Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300"><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
+      </div>
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+          <h3 className="text-white font-semibold">{editing ? 'Edit Member' : 'Add Team Member'}</h3>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <div><label className={labelCls}>Full Name *</label><input className={inputCls} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. James Njenga" /></div>
+            <div><label className={labelCls}>Role / Title *</label><input className={inputCls} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} placeholder="e.g. Founder & CEO" /></div>
+            <div><label className={labelCls}>Location</label><input className={inputCls} value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="e.g. Nairobi" /></div>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Member'}</Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-3">
+        {loading ? <p className="text-gray-500 py-6 text-center">Loading…</p> : items.length === 0 ? <p className="text-gray-500 py-6 text-center">No team members yet.</p> : items.map(m => (
+          <div key={m.id} className="bg-gray-900 border border-gray-700 rounded-xl p-4 flex items-center justify-between gap-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold">{m.name.charAt(0)}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium text-sm">{m.name}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{m.role} · {m.location}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => openEdit(m)} className="h-7 w-7 p-0 text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => del(m.id)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─ About: Values Manager ──────────────────────────────────────────────────────
+const AVAILABLE_ICONS = ['Shield', 'Users', 'TrendingUp', 'Award', 'Star', 'Home', 'MapPin', 'CheckCircle'];
+const BLANK_VALUE = { icon_name: 'Shield', title: '', desc: '' };
+const AboutValuesManager: React.FC<{ token: string }> = ({ token }) => {
+  const [items, setItems] = useState<AboutValue[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<AboutValue | null>(null);
+  const [form, setForm] = useState({ ...BLANK_VALUE });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const r = await fetch(`${API}/api/admin/about/values`, { headers: authHeaders(token) }); const d = await r.json(); setItems(d.data ?? []); } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setEditing(null); setForm({ ...BLANK_VALUE }); setShowForm(true); };
+  const openEdit = (v: AboutValue) => { setEditing(v); setForm({ icon_name: v.icon_name, title: v.title, desc: v.desc }); setShowForm(true); };
+
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.desc.trim()) return;
+    setSaving(true);
+    const url = editing ? `${API}/api/admin/about/values/${editing.id}` : `${API}/api/admin/about/values`;
+    await fetch(url, { method: editing ? 'PATCH' : 'POST', headers: authHeaders(token), body: JSON.stringify(form) });
+    setSaving(false); setShowForm(false); load();
+  };
+
+  const del = async (id: string) => {
+    if (!confirm('Delete this value?')) return;
+    await fetch(`${API}/api/admin/about/values/${id}`, { method: 'DELETE', headers: authHeaders(token) }); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="w-4 h-4 mr-1.5" /> Add Value</Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300"><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
+      </div>
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+          <h3 className="text-white font-semibold">{editing ? 'Edit Value' : 'Add Core Value'}</h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className={labelCls}>Icon</label>
+              <select className={inputCls} value={form.icon_name} onChange={e => setForm(f => ({ ...f, icon_name: e.target.value }))}>
+                {AVAILABLE_ICONS.map(ic => <option key={ic} value={ic}>{ic}</option>)}
+              </select>
+            </div>
+            <div><label className={labelCls}>Title *</label><input className={inputCls} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Integrity" /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Description *</label><textarea className={inputCls} rows={3} value={form.desc} onChange={e => setForm(f => ({ ...f, desc: e.target.value }))} placeholder="Short description of this value..." /></div>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Value'}</Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-3">
+        {loading ? <p className="text-gray-500 py-6 text-center">Loading…</p> : items.length === 0 ? <p className="text-gray-500 py-6 text-center">No values yet.</p> : items.map(v => (
+          <div key={v.id} className="bg-gray-900 border border-gray-700 rounded-xl p-4 flex items-start justify-between gap-4">
+            <div className="w-8 h-8 bg-emerald-900/40 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-emerald-400 text-xs font-mono">{v.icon_name.slice(0, 2)}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium text-sm">{v.title} <span className="text-gray-500 text-xs font-normal">({v.icon_name})</span></p>
+              <p className="text-gray-400 text-xs mt-1 line-clamp-2">{v.desc}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => openEdit(v)} className="h-7 w-7 p-0 text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => del(v.id)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─ About: Story & Stats Manager ───────────────────────────────────────────────
+const AboutStoryManager: React.FC<{ token: string }> = ({ token }) => {
+  const [story, setStory] = useState<string[]>(['', '', '']);
+  const [stats, setStats] = useState<AboutStat[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const r = await fetch(`${API}/api/admin/about/story`, { headers: authHeaders(token) });
+      const d = await r.json();
+      if (d.data) { setStory(d.data.story ?? []); setStats(d.data.stats ?? []); }
+    } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await fetch(`${API}/api/admin/about/story`, {
+      method: 'PUT',
+      headers: authHeaders(token),
+      body: JSON.stringify({ story, stats }),
+    });
+    setSaving(false);
+  };
+
+  const updatePara = (i: number, val: string) => setStory(s => s.map((p, idx) => idx === i ? val : p));
+  const addPara = () => setStory(s => [...s, '']);
+  const removePara = (i: number) => setStory(s => s.filter((_, idx) => idx !== i));
+  const updateStat = (i: number, field: 'value' | 'label', val: string) =>
+    setStats(s => s.map((st, idx) => idx === i ? { ...st, [field]: val } : st));
+
+  if (loading) return <p className="text-gray-500 py-6 text-center">Loading…</p>;
+
+  return (
+    <div className="space-y-6">
+      {/* Story Paragraphs */}
+      <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-semibold">Story Paragraphs</h3>
+          <button onClick={addPara} className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add paragraph</button>
+        </div>
+        {story.map((para, i) => (
+          <div key={i} className="flex gap-2 items-start">
+            <div className="flex-1">
+              <label className={labelCls}>Paragraph {i + 1}</label>
+              <textarea className={inputCls} rows={3} value={para} onChange={e => updatePara(i, e.target.value)} placeholder="Paragraph text..." />
+            </div>
+            {story.length > 1 && (
+              <button onClick={() => removePara(i)} className="mt-5 text-gray-600 hover:text-red-400 transition-colors"><X className="w-4 h-4" /></button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Stats */}
+      <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-4">
+        <h3 className="text-white font-semibold">Stats / Key Numbers</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {stats.map((stat, i) => (
+            <div key={stat.id} className="flex gap-2">
+              <div className="w-24">
+                <label className={labelCls}>Value</label>
+                <input className={inputCls} value={stat.value} onChange={e => updateStat(i, 'value', e.target.value)} placeholder="500+" />
+              </div>
+              <div className="flex-1">
+                <label className={labelCls}>Label</label>
+                <input className={inputCls} value={stat.label} onChange={e => updateStat(i, 'label', e.target.value)} placeholder="Properties Listed" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        {saving ? 'Saving…' : 'Save Story & Stats'}
+      </Button>
+    </div>
+  );
+};
+
+// ─ About Manager (combines sub-tabs) ─────────────────────────────────────────
+const AboutManager: React.FC<{ token: string }> = ({ token }) => {
+  const [sub, setSub] = useState<'team' | 'values' | 'story'>('team');
+  const subs = [
+    { id: 'team' as const, label: 'Team Members' },
+    { id: 'values' as const, label: 'Core Values' },
+    { id: 'story' as const, label: 'Story & Stats' },
+  ];
+  return (
+    <div className="space-y-5">
+      <div className="flex gap-2 flex-wrap">
+        {subs.map(({ id, label }) => (
+          <button key={id} onClick={() => setSub(id)}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors border ${sub === id ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-gray-800 text-gray-400 hover:text-white border-gray-700'}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {sub === 'team' && <AboutTeamManager token={token} />}
+      {sub === 'values' && <AboutValuesManager token={token} />}
+      {sub === 'story' && <AboutStoryManager token={token} />}
+    </div>
+  );
+};
+
 // ─ PagesTab ───────────────────────────────────────────────────────────────────
 const PagesTab: React.FC<{ token: string }> = ({ token }) => {
-  const [section, setSection] = useState<'faqs' | 'blog' | 'careers'>('faqs');
+  const [section, setSection] = useState<'faqs' | 'blog' | 'careers' | 'about'>('faqs');
   const sections = [
     { id: 'faqs' as const, label: 'FAQs', icon: HelpCircle },
     { id: 'blog' as const, label: 'Blog Posts', icon: BookOpen },
     { id: 'careers' as const, label: 'Careers', icon: Briefcase },
+    { id: 'about' as const, label: 'About Page', icon: Users },
   ];
   return (
     <div className="space-y-6">
@@ -1183,6 +1446,7 @@ const PagesTab: React.FC<{ token: string }> = ({ token }) => {
       {section === 'faqs' && <FaqsManager token={token} />}
       {section === 'blog' && <BlogManager token={token} />}
       {section === 'careers' && <CareersManager token={token} />}
+      {section === 'about' && <AboutManager token={token} />}
     </div>
   );
 };

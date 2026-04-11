@@ -19,4 +19,12 @@ router.get('/careers', (_req: Request, res: Response) => {
   res.json({ data: jobs });
 });
 
+router.get('/about', (_req: Request, res: Response) => {
+  const story = db.get('about_story').value() as unknown as string[];
+  const stats = db.get('about_stats').orderBy('order', 'asc').value();
+  const values = db.get('about_values').orderBy('order', 'asc').value();
+  const team = db.get('about_team').orderBy('order', 'asc').value();
+  res.json({ data: { story, stats, values, team } });
+});
+
 export default router;

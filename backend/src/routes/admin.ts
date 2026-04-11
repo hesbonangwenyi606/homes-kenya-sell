@@ -278,4 +278,98 @@ router.delete('/careers/:id', (req: AdminRequest, res: Response) => {
   res.status(204).send();
 });
 
+// ── About Page ────────────────────────────────────────────────────────────────
+
+// Story & Stats
+router.get('/about/story', (_req: AdminRequest, res: Response) => {
+  const story = db.get('about_story').value() as unknown as string[];
+  const stats = db.get('about_stats').orderBy('order', 'asc').value();
+  res.json({ data: { story, stats } });
+});
+
+const aboutStorySchema = z.object({
+  story: z.array(z.string()),
+  stats: z.array(z.object({ id: z.string(), value: z.string(), label: z.string(), order: z.number() })),
+});
+
+router.put('/about/story', (req: AdminRequest, res: Response) => {
+  const parsed = aboutStorySchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.set('about_story', parsed.data.story).write();
+  db.set('about_stats', parsed.data.stats).write();
+  res.json({ data: { story: parsed.data.story, stats: parsed.data.stats } });
+});
+
+// Values
+const aboutValueSchema = z.object({
+  icon_name: z.string().min(1),
+  title: z.string().min(1),
+  desc: z.string().min(1),
+  order: z.number().optional(),
+});
+
+router.get('/about/values', (_req: AdminRequest, res: Response) => {
+  res.json({ data: db.get('about_values').orderBy('order', 'asc').value() });
+});
+
+router.post('/about/values', (req: AdminRequest, res: Response) => {
+  const parsed = aboutValueSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  const all = db.get('about_values').value() as { order?: number }[];
+  const maxOrder = all.length > 0 ? Math.max(...all.map((v) => v.order ?? 0)) : 0;
+  const now = new Date().toISOString();
+  const item = { id: uuid(), ...parsed.data, order: parsed.data.order ?? maxOrder + 1, created_at: now, updated_at: now };
+  db.get('about_values').push(item as never).write();
+  res.status(201).json({ data: item });
+});
+
+router.patch('/about/values/:id', (req: AdminRequest, res: Response) => {
+  const id = String(req.params.id);
+  const parsed = aboutValueSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.get('about_values').find((v: { id: string }) => v.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('about_values').find((v: { id: string }) => v.id === id).value() });
+});
+
+router.delete('/about/values/:id', (req: AdminRequest, res: Response) => {
+  db.get('about_values').remove((v: { id: string }) => v.id === String(req.params.id)).write();
+  res.status(204).send();
+});
+
+// Team Members
+const aboutTeamSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  location: z.string().min(1),
+  order: z.number().optional(),
+});
+
+router.get('/about/team', (_req: AdminRequest, res: Response) => {
+  res.json({ data: db.get('about_team').orderBy('order', 'asc').value() });
+});
+
+router.post('/about/team', (req: AdminRequest, res: Response) => {
+  const parsed = aboutTeamSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  const all = db.get('about_team').value() as { order?: number }[];
+  const maxOrder = all.length > 0 ? Math.max(...all.map((m) => m.order ?? 0)) : 0;
+  const now = new Date().toISOString();
+  const item = { id: uuid(), ...parsed.data, order: parsed.data.order ?? maxOrder + 1, created_at: now, updated_at: now };
+  db.get('about_team').push(item as never).write();
+  res.status(201).json({ data: item });
+});
+
+router.patch('/about/team/:id', (req: AdminRequest, res: Response) => {
+  const id = String(req.params.id);
+  const parsed = aboutTeamSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.get('about_team').find((m: { id: string }) => m.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('about_team').find((m: { id: string }) => m.id === id).value() });
+});
+
+router.delete('/about/team/:id', (req: AdminRequest, res: Response) => {
+  db.get('about_team').remove((m: { id: string }) => m.id === String(req.params.id)).write();
+  res.status(204).send();
+});
+
 export default router;

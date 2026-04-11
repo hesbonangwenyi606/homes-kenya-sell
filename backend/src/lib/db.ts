@@ -100,6 +100,33 @@ export interface JobOpening {
   updated_at: string;
 }
 
+export interface AboutTeamMember {
+  id: string;
+  name: string;
+  role: string;
+  location: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AboutValue {
+  id: string;
+  icon_name: string;
+  title: string;
+  desc: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AboutStat {
+  id: string;
+  value: string;
+  label: string;
+  order: number;
+}
+
 interface Schema {
   properties: DBProperty[];
   leads: Lead[];
@@ -108,6 +135,10 @@ interface Schema {
   faq_items: FaqItem[];
   blog_posts: BlogPost[];
   job_openings: JobOpening[];
+  about_team: AboutTeamMember[];
+  about_values: AboutValue[];
+  about_stats: AboutStat[];
+  about_story: string[];
 }
 
 const dataDir = path.join(__dirname, '../../data');
@@ -149,7 +180,7 @@ const SEED_FAQS: FaqItem[] = [
 ];
 
 const SEED_BLOG_POSTS: BlogPost[] = [
-  { id: 'blog-1', title: 'Top 5 Neighborhoods to Invest in Nairobi in 2026', excerpt: "Nairobi's property market continues to show strong growth. Here are the top neighborhoods where smart investors are putting their money this year.", content: "Nairobi remains East Africa's most dynamic real estate market. With infrastructure development accelerating and population growth continuing, certain neighborhoods stand out as prime investment targets.\n\n**Karen & Lang'ata** — This leafy suburb attracts high-net-worth buyers consistently. Proximity to Wilson Airport, international schools, and Nairobi National Park keeps demand high. Prices have appreciated 12% year-on-year.\n\n**Westlands** — The commercial hub is evolving into a mixed-use powerhouse. New residential towers, boutique hotels, and grade-A office space make this ideal for investors targeting rental income.\n\n**Ruiru** — With the Thika Superhighway making commutes manageable, Ruiru offers affordable entry points with strong capital growth potential. Land prices have tripled over the past five years.\n\n**Kitengela** — South of Nairobi, Kitengela has emerged as a hotbed of middle-income housing. Lower land prices attract first-time buyers and investors looking for strong appreciation.\n\n**Gigiri & Runda** — The diplomatic belt offers premium rental yields. Proximity to UN headquarters and embassies sustains high demand from expatriate tenants year-round.", author: 'James Njenga', category: 'Market Insights', image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572279611_caa18220.jpg', published: true, created_at: '2026-01-15T00:00:00.000Z', updated_at: '2026-01-15T00:00:00.000Z' },
+  { id: 'blog-1', title: 'Top 5 Neighborhoods to Invest in Nairobi in 2026', excerpt: "Nairobi's property market continues to show strong growth. Here are the top neighborhoods where smart investors are putting their money this year.", content: "Nairobi remains East Africa's most dynamic real estate market. With infrastructure development accelerating and population growth continuing, certain neighborhoods stand out as prime investment targets.\n\n**Karen & Lang'ata** — This leafy suburb attracts high-net-worth buyers consistently. Proximity to Wilson Airport, international schools, and Nairobi National Park keeps demand high. Prices have appreciated 12% year-on-year.\n\n**Westlands** — The commercial hub is evolving into a mixed-use powerhouse. New residential towers, boutique hotels, and grade-A office space make this ideal for investors targeting rental income.\n\n**Ruiru** — With the Thika Superhighway making commutes manageable, Ruiru offers affordable entry points with strong capital growth potential. Land prices have tripled over the past five years.\n\n**Kitengela** — South of Nairobi, Kitengela has emerged as a hotbed of middle-income housing. Lower land prices attract first-time buyers and investors looking for strong appreciation.\n\n**Gigiri & Runda** — The diplomatic belt offers premium rental yields. Proximity to UN headquarters and embassies sustains high demand from expatriate tenants year-round.", author: 'Henry Njenga', category: 'Market Insights', image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572279611_caa18220.jpg', published: true, created_at: '2026-01-15T00:00:00.000Z', updated_at: '2026-01-15T00:00:00.000Z' },
   { id: 'blog-2', title: "First-Time Buyer's Complete Guide to Property in Kenya", excerpt: "Navigating Kenya's real estate market for the first time? This guide walks you through every step — from budget planning to title deed transfer.", content: "Buying your first property in Kenya is one of the most significant financial decisions you will make. Understanding the process helps you avoid costly mistakes.\n\n**Step 1: Define Your Budget** — Before viewing a single property, know your numbers. Factor in purchase price, stamp duty (2-4%), legal fees (0.5-1%), and moving costs. Get mortgage pre-approval if financing.\n\n**Step 2: Choose the Right Location** — Location determines both your quality of life and investment return. Consider proximity to work, schools, healthcare, and transport links.\n\n**Step 3: Engage a Reputable Agent** — Work with a registered agent. They provide access to verified listings, market knowledge, and negotiation support.\n\n**Step 4: Conduct Due Diligence** — Verify the title deed at the Lands Registry, check for caveats or encumbrances, confirm accurate land size, and check land rates compliance.\n\n**Step 5: Sign the Sale Agreement** — Your lawyer reviews the sale agreement. Pay a 10% deposit on signing. Balance is paid on completion — typically 30-90 days later.\n\n**Step 6: Transfer and Registration** — Title transfer is filed at the Ministry of Lands. Stamp duty is paid and the new title deed is issued in your name within 30-60 days.", author: 'Grace Wanjiru', category: "Buyer's Guide", image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572312388_e8be063b.png', published: true, created_at: '2026-02-10T00:00:00.000Z', updated_at: '2026-02-10T00:00:00.000Z' },
   { id: 'blog-3', title: 'Land vs. House: Which Investment Makes More Sense?', excerpt: "Should you buy raw land or a ready house? We break down the pros, cons, and return potential of each investment type in Kenya's current market.", content: "The land vs. house debate is one of the most common questions we receive. Both have merit, but your choice should align with your investment horizon and cash flow needs.\n\n**Buying Land: The Case For It** — Land appreciates faster in emerging corridors. No depreciation, no maintenance costs, and minimal ongoing expenses. In Ruiru, Juja, and Kitengela, land prices have increased 200-400% over the past decade.\n\n**The Downsides of Land** — Land generates no rental income. It ties up capital with zero cash flow. You also face risks of encroachment and the complexity of Kenya's land registry processes.\n\n**Buying a House: The Case For It** — A house generates immediate rental income, offsetting mortgage costs. Residential property in Nairobi yields 5-8% annually in rental income, with capital appreciation on top.\n\n**The Downsides of Houses** — Maintenance costs, tenant management, and vacancy periods eat into returns. Houses also depreciate structurally, requiring ongoing investment.\n\n**Our Verdict** — For long-term wealth with a 10+ year horizon: land wins. For regular passive income: a house or apartment is superior. Many savvy investors buy both — land for appreciation and residential units for cash flow.", author: 'Peter Mwangi', category: 'Investment Tips', image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572537104_c4b7e998.jpg', published: true, created_at: '2026-03-05T00:00:00.000Z', updated_at: '2026-03-05T00:00:00.000Z' },
   { id: 'blog-4', title: 'Understanding Property Valuation in Kenya', excerpt: "How is a property's market value determined? Understanding valuation methodology helps you buy smart and negotiate with confidence.", content: "Property valuation in Kenya follows internationally recognised methodologies adapted for local market conditions. Understanding how valuation works gives you a significant advantage.\n\n**Comparison Method** — The most common approach: valuers compare your property against recent sales of similar properties in the same area. Location, size, age, condition, and amenities are weighted to arrive at market value.\n\n**Income Capitalisation Method** — Used primarily for commercial and investment properties, this method calculates value based on net income generated. A shop earning KES 150,000/month may be valued at a multiple of that annual income.\n\n**Cost Approach** — The valuer estimates what it would cost to replace the building at current construction rates, then depreciates for age and condition. Often used for unique or special-purpose properties.\n\n**Factors That Increase Value** — Infrastructure improvements, proximity to amenities, good title deed status, high-demand locations, and quality finishes all push valuations higher.\n\n**Getting a Fair Valuation** — Always engage a registered valuer from the Institution of Surveyors of Kenya (ISK). At Hemaprin Homes, our in-house valuers provide free market assessments for all listed properties.", author: 'Peter Mwangi', category: 'Market Insights', image: 'https://d64gsuwffb70l.cloudfront.net/696a4515213e3de2b9094c7d_1768572318206_023f5e8c.png', published: true, created_at: '2026-03-20T00:00:00.000Z', updated_at: '2026-03-20T00:00:00.000Z' },
@@ -161,6 +192,45 @@ const SEED_JOBS: JobOpening[] = [
   { id: 'job-3', title: 'Digital Marketing Specialist', department: 'Marketing', location: 'Nairobi (Hybrid)', type: 'full-time', description: "Help us grow Hemaprin Homes into Kenya's most recognised real estate brand. You will manage our social media channels, run paid advertising campaigns, produce property content, and analyse performance metrics to drive qualified leads.", requirements: ['3+ years of digital marketing experience', 'Proficiency in Meta Ads, Google Ads, and SEO', 'Experience with real estate or property brands is a plus', 'Strong copywriting and visual content creation skills', 'Data-driven mindset with proficiency in Google Analytics'], active: true, created_at: '2026-03-15T00:00:00.000Z', updated_at: '2026-03-15T00:00:00.000Z' },
 ];
 
-db.defaults({ properties: SEED_PROPERTIES, leads: [], inquiries: [], newsletter: [], faq_items: SEED_FAQS, blog_posts: SEED_BLOG_POSTS, job_openings: SEED_JOBS }).write();
+const SEED_ABOUT_TEAM: AboutTeamMember[] = [
+  { id: 'team-1', name: 'Henry Njenga', role: 'Founder & CEO', location: 'Nairobi', order: 1, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'team-2', name: 'Grace Wanjiru', role: 'Head of Sales', location: 'Kiambu', order: 2, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'team-3', name: 'Peter Mwangi', role: 'Property Valuer', location: 'Thika', order: 3, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'team-4', name: 'Alice Kamau', role: 'Client Relations', location: 'Nairobi', order: 4, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+];
+
+const SEED_ABOUT_VALUES: AboutValue[] = [
+  { id: 'val-1', icon_name: 'Shield', title: 'Integrity', desc: 'We operate with full transparency. Every listing is verified and every transaction is handled with honesty.', order: 1, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'val-2', icon_name: 'Users', title: 'Client First', desc: 'Your property goals drive everything we do. We listen, advise, and deliver results that matter to you.', order: 2, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'val-3', icon_name: 'TrendingUp', title: 'Market Expertise', desc: 'Years of experience across Nairobi, Kiambu, Thika, and beyond means we know the market inside out.', order: 3, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+  { id: 'val-4', icon_name: 'Award', title: 'Quality Listings', desc: "We curate only the best properties — residential, commercial, and land — across Kenya's key growth corridors.", order: 4, created_at: '2025-01-01T00:00:00.000Z', updated_at: '2025-01-01T00:00:00.000Z' },
+];
+
+const SEED_ABOUT_STATS: AboutStat[] = [
+  { id: 'stat-1', value: '500+', label: 'Properties Listed', order: 1 },
+  { id: 'stat-2', value: '900+', label: 'Happy Clients', order: 2 },
+  { id: 'stat-3', value: '47', label: 'Cities Covered', order: 3 },
+  { id: 'stat-4', value: '150+', label: 'Expert Agents', order: 4 },
+];
+
+const SEED_ABOUT_STORY: string[] = [
+  'Hemaprin Homes was founded with a simple mission: make property buying, selling, and investment in Kenya simple, transparent, and trustworthy. We started in Nairobi and have since grown to cover major towns across Central Kenya and beyond.',
+  'With a portfolio of over 500 verified listings and a team of seasoned agents, we have helped hundreds of families and investors find the perfect property. From studio apartments in Ruiru to prime land in Thika and luxury villas in Karen, our listings span every budget and lifestyle.',
+  'Based at Arcade House, 1st Floor, Nairobi, we combine local market knowledge with modern technology to give you the best property search experience in Kenya.',
+];
+
+db.defaults({
+  properties: SEED_PROPERTIES,
+  leads: [],
+  inquiries: [],
+  newsletter: [],
+  faq_items: SEED_FAQS,
+  blog_posts: SEED_BLOG_POSTS,
+  job_openings: SEED_JOBS,
+  about_team: SEED_ABOUT_TEAM,
+  about_values: SEED_ABOUT_VALUES,
+  about_stats: SEED_ABOUT_STATS,
+  about_story: SEED_ABOUT_STORY,
+}).write();
 
 export default db;
