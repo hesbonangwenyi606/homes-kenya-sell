@@ -9,6 +9,7 @@ import inquiriesRouter from './routes/inquiries';
 import leadsRouter from './routes/leads';
 import newsletterRouter from './routes/newsletter';
 import adminRouter, { adminLogin } from './routes/admin';
+import uploadRouter from './routes/upload';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -32,6 +33,9 @@ app.use(
 
 app.use(express.json());
 
+// ── Static uploads ─────────────────────────────────────────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
 // ── Routes ─────────────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -44,6 +48,7 @@ app.use('/api/newsletter', newsletterRouter);
 
 // Admin login is public; everything else under /api/admin requires JWT
 app.post('/api/admin/login', adminLogin);
+app.use('/api/admin/upload', uploadRouter);
 app.use('/api/admin', adminRouter);
 
 // ── Error handler ──────────────────────────────────────────────────────────────

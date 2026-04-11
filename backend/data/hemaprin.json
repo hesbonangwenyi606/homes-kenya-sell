@@ -1,7 +1,32 @@
 {
   "leads": [],
-  "inquiries": [],
-  "newsletter": [],
+  "inquiries": [
+    {
+      "id": "fb7e113b-28ab-4eae-8191-42d78d504702",
+      "property_id": 19,
+      "property_title": "Modern Villa in Kiambu",
+      "property_location": "Kitengela",
+      "inquirer_name": "John Doe",
+      "inquirer_email": "john@doe.com",
+      "inquirer_phone": "+254743573380",
+      "message": "I am interested in \"Modern Villa in Kiambu\" in Kitengela.",
+      "agent_id": null,
+      "agent_name": null,
+      "status": "pending",
+      "created_at": "2026-04-11T14:28:36.899Z",
+      "updated_at": "2026-04-11T14:28:36.899Z"
+    }
+  ],
+  "newsletter": [
+    {
+      "id": "8284bd4d-75f6-4eb1-9db7-e5d98c93d57b",
+      "email": "test@gmail.com",
+      "status": "active",
+      "source": "website_footer",
+      "created_at": "2026-04-11T14:29:57.127Z",
+      "updated_at": "2026-04-11T14:29:57.127Z"
+    }
+  ],
   "properties": [
     {
       "id": 1,
