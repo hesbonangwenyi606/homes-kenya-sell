@@ -154,10 +154,9 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
-              {quickLinks.map(({ label, path, icon: Icon }) => (
+              {quickLinks.map(({ label, path }) => (
                 <li key={label}>
-                  <Link to={path} className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
-                    <Icon className="w-3.5 h-3.5 text-emerald-500 group-hover:text-emerald-400 flex-shrink-0" />
+                  <Link to={path} className="text-gray-400 hover:text-emerald-400 transition-colors">
                     {label}
                   </Link>
                 </li>
