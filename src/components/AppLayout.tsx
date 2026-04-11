@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   SlidersHorizontal,
@@ -34,6 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 const AppLayout: React.FC = () => {
   const ITEMS_PER_PAGE = 6;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { user, signOut } = useAuth();
   const { properties } = useProperties();
@@ -124,6 +125,19 @@ const AppLayout: React.FC = () => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredProperties.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredProperties, currentPage]);
+
+  // Read filter params from URL (e.g. /?type=house or /?location=Nairobi from footer links)
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    const locationParam = searchParams.get('location');
+    if (typeParam) setSelectedType(typeParam);
+    if (locationParam) setSelectedLocation(locationParam);
+    if (typeParam || locationParam) {
+      setTimeout(() => {
+        document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -373,11 +387,13 @@ const AppLayout: React.FC = () => {
       </RevealOnScroll>
 
       <RevealOnScroll delayMs={160}>
-        <ContactSection
-          userId={user?.id}
-          defaultName={user?.user_metadata?.full_name || ''}
-          defaultEmail={user?.email || ''}
-        />
+        <div id="contact">
+          <ContactSection
+            userId={user?.id}
+            defaultName={user?.user_metadata?.full_name || ''}
+            defaultEmail={user?.email || ''}
+          />
+        </div>
       </RevealOnScroll>
 
       <Footer />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useNewsletterSubscribers } from '@/hooks/useNewsletterSubscribers';
 import { useToast } from '@/hooks/use-toast';
 
@@ -39,9 +40,22 @@ const Footer: React.FC = () => {
     setTimeout(() => setSubscribed(false), 3000);
   };
 
-  const propertyTypes = ['Houses', 'Apartments', 'Land', 'Bungalows', 'Commercial', 'Villas'];
+  const propertyTypes = [
+    { label: 'Houses', path: '/?type=house' },
+    { label: 'Apartments', path: '/?type=apartment' },
+    { label: 'Land', path: '/?type=land' },
+    { label: 'Bungalows', path: '/?type=bungalow' },
+    { label: 'Commercial', path: '/' },
+    { label: 'Villas', path: '/' },
+  ];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
-  const quickLinks = ['About Us', 'Blog', 'Careers', 'FAQs', 'Contact'];
+  const quickLinks = [
+    { label: 'About Us', path: '/about' },
+    { label: 'Blog', path: '/blog' },
+    { label: 'Careers', path: '/careers' },
+    { label: 'FAQs', path: '/faqs' },
+    { label: 'Contact', path: '/#contact' },
+  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -115,7 +129,11 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Property Types</h4>
             <ul className="space-y-3">
               {propertyTypes.map((type) => (
-                <li key={type} className="text-gray-400">{type}</li>
+                <li key={type.label}>
+                  <Link to={type.path} className="text-gray-400 hover:text-emerald-400 transition-colors">
+                    {type.label}
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>
@@ -135,12 +153,7 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <span className="text-gray-400 flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-5 transition-all" />
-                    {link.name}
-                  </span>
-                </li>
+                <li key={link} className="text-gray-400">{link}</li>
               ))}
             </ul>
           </div>
