@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { supabaseAdmin } from '../lib/supabase';
+import { supabaseAuth, supabaseAdmin } from '../lib/supabase';
 import { requireAdmin } from '../middleware/adminAuth';
 
 const router = Router();
@@ -36,7 +36,7 @@ export async function adminLogin(req: Request, res: Response) {
     return;
   }
 
-  const { data, error } = await supabaseAdmin.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password });
 
   if (error || !data.session) {
     res.status(401).json({ error: error?.message ?? 'Invalid credentials' });

@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { supabaseAdmin } from '../lib/supabase';
+import { supabaseAuth } from '../lib/supabase';
 import { AuthRequest } from './auth';
 
 const adminEmails = (process.env.ADMIN_EMAILS ?? '')
@@ -19,7 +19,7 @@ export async function requireAdmin(req: AuthRequest, res: Response, next: NextFu
   }
 
   const token = authHeader.slice(7);
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  const { data, error } = await supabaseAuth.auth.getUser(token);
 
   if (error || !data.user) {
     res.status(401).json({ error: 'Invalid or expired token' });

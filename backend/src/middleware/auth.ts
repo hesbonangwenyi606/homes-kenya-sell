@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { supabaseAdmin } from '../lib/supabase';
+import { supabaseAuth } from '../lib/supabase';
 
 export interface AuthRequest extends Request {
   user?: { id: string; email?: string };
@@ -17,7 +17,7 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
   }
 
   const token = authHeader.slice(7);
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  const { data, error } = await supabaseAuth.auth.getUser(token);
 
   if (error || !data.user) {
     res.status(401).json({ error: 'Invalid or expired token' });
@@ -36,7 +36,7 @@ export async function optionalAuth(req: AuthRequest, _res: Response, next: NextF
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7);
-    const { data } = await supabaseAdmin.auth.getUser(token);
+    const { data } = await supabaseAuth.auth.getUser(token);
     if (data.user) {
       req.user = { id: data.user.id, email: data.user.email };
     }
