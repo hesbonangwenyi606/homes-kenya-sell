@@ -10,6 +10,7 @@ import leadsRouter from './routes/leads';
 import newsletterRouter from './routes/newsletter';
 import adminRouter, { adminLogin } from './routes/admin';
 import uploadRouter from './routes/upload';
+import pagesRouter from './routes/pages';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -45,6 +46,7 @@ app.use('/api/properties', propertiesRouter);
 app.use('/api/inquiries', inquiriesRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/newsletter', newsletterRouter);
+app.use('/api/pages', pagesRouter);
 
 // Admin login is public; everything else under /api/admin requires JWT
 app.post('/api/admin/login', adminLogin);

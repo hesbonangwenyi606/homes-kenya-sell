@@ -26,7 +26,6 @@ import {
   Users,
   FileText,
   Mail,
-  BarChart3,
   Eye,
   Trash2,
   RefreshCw,
@@ -36,6 +35,11 @@ import {
   Pencil,
   Building2,
   Star,
+  HelpCircle,
+  BookOpen,
+  Briefcase,
+  CheckCircle,
+  X,
 } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
@@ -899,6 +903,290 @@ const NewsletterTab: React.FC<{ token: string }> = ({ token }) => {
   );
 };
 
+// ── Pages tab (FAQs, Blog, Careers) ──────────────────────────────────────────
+
+interface FaqItem { id: string; question: string; answer: string; order: number; }
+interface BlogPost { id: string; title: string; excerpt: string; content: string; author: string; category: string; image: string; published: boolean; created_at: string; }
+interface JobOpening { id: string; title: string; department: string; location: string; type: string; description: string; requirements: string[]; active: boolean; }
+
+const BLANK_FAQ = { question: '', answer: '' };
+const BLANK_POST = { title: '', excerpt: '', content: '', author: '', category: 'Market Insights', image: '', published: true };
+const BLANK_JOB = { title: '', department: '', location: '', type: 'full-time', description: '', requirements: '', active: true };
+
+const inputCls = 'w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500';
+const labelCls = 'text-xs text-gray-400 mb-1 block';
+
+// ─ FAQs Manager ───────────────────────────────────────────────────────────────
+const FaqsManager: React.FC<{ token: string }> = ({ token }) => {
+  const [items, setItems] = useState<FaqItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<FaqItem | null>(null);
+  const [form, setForm] = useState({ ...BLANK_FAQ });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const r = await fetch(`${API}/api/admin/faqs`, { headers: authHeaders(token) }); const d = await r.json(); setItems(d.data ?? []); } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setEditing(null); setForm({ ...BLANK_FAQ }); setShowForm(true); };
+  const openEdit = (i: FaqItem) => { setEditing(i); setForm({ question: i.question, answer: i.answer }); setShowForm(true); };
+
+  const handleSave = async () => {
+    if (!form.question.trim() || !form.answer.trim()) return;
+    setSaving(true);
+    const url = editing ? `${API}/api/admin/faqs/${editing.id}` : `${API}/api/admin/faqs`;
+    await fetch(url, { method: editing ? 'PATCH' : 'POST', headers: authHeaders(token), body: JSON.stringify(form) });
+    setSaving(false); setShowForm(false); load();
+  };
+
+  const del = async (id: string) => {
+    if (!confirm('Delete this FAQ?')) return;
+    await fetch(`${API}/api/admin/faqs/${id}`, { method: 'DELETE', headers: authHeaders(token) }); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="w-4 h-4 mr-1.5" /> Add FAQ</Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300"><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
+      </div>
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+          <h3 className="text-white font-semibold">{editing ? 'Edit FAQ' : 'New FAQ'}</h3>
+          <div><label className={labelCls}>Question *</label><input className={inputCls} value={form.question} onChange={e => setForm(f => ({ ...f, question: e.target.value }))} placeholder="e.g. How do I schedule a viewing?" /></div>
+          <div><label className={labelCls}>Answer *</label><textarea className={inputCls} rows={4} value={form.answer} onChange={e => setForm(f => ({ ...f, answer: e.target.value }))} placeholder="Detailed answer..." /></div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Add FAQ'}</Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-3">
+        {loading ? <p className="text-gray-500 py-6 text-center">Loading…</p> : items.length === 0 ? <p className="text-gray-500 py-6 text-center">No FAQs yet.</p> : items.map(item => (
+          <div key={item.id} className="bg-gray-900 border border-gray-700 rounded-xl p-4 flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium text-sm">{item.question}</p>
+              <p className="text-gray-400 text-xs mt-1 line-clamp-2">{item.answer}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => openEdit(item)} className="h-7 w-7 p-0 text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => del(item.id)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─ Blog Manager ───────────────────────────────────────────────────────────────
+const BlogManager: React.FC<{ token: string }> = ({ token }) => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<BlogPost | null>(null);
+  const [form, setForm] = useState({ ...BLANK_POST });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const r = await fetch(`${API}/api/admin/blog`, { headers: authHeaders(token) }); const d = await r.json(); setPosts(d.data ?? []); } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setEditing(null); setForm({ ...BLANK_POST }); setShowForm(true); };
+  const openEdit = (p: BlogPost) => { setEditing(p); setForm({ title: p.title, excerpt: p.excerpt, content: p.content, author: p.author, category: p.category, image: p.image, published: p.published }); setShowForm(true); };
+
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.excerpt.trim() || !form.content.trim() || !form.author.trim()) return;
+    setSaving(true);
+    const url = editing ? `${API}/api/admin/blog/${editing.id}` : `${API}/api/admin/blog`;
+    await fetch(url, { method: editing ? 'PATCH' : 'POST', headers: authHeaders(token), body: JSON.stringify(form) });
+    setSaving(false); setShowForm(false); load();
+  };
+
+  const del = async (id: string) => {
+    if (!confirm('Delete this post?')) return;
+    await fetch(`${API}/api/admin/blog/${id}`, { method: 'DELETE', headers: authHeaders(token) }); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="w-4 h-4 mr-1.5" /> Add Post</Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300"><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
+      </div>
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+          <h3 className="text-white font-semibold">{editing ? 'Edit Post' : 'New Post'}</h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2"><label className={labelCls}>Title *</label><input className={inputCls} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Post title" /></div>
+            <div><label className={labelCls}>Author *</label><input className={inputCls} value={form.author} onChange={e => setForm(f => ({ ...f, author: e.target.value }))} placeholder="e.g. James Njenga" /></div>
+            <div><label className={labelCls}>Category</label><input className={inputCls} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="e.g. Market Insights" /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Image URL</label><input className={inputCls} value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="https://..." /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Excerpt *</label><textarea className={inputCls} rows={2} value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} placeholder="Short summary shown on blog listing..." /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Full Content *</label><textarea className={inputCls} rows={8} value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} placeholder="Full article content. Use double newline for paragraphs." /></div>
+            <div className="flex items-center gap-2"><input type="checkbox" id="published" checked={form.published} onChange={e => setForm(f => ({ ...f, published: e.target.checked }))} className="w-4 h-4 accent-emerald-500" /><label htmlFor="published" className="text-sm text-gray-300">Published</label></div>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Post'}</Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+      <div className="rounded-xl border border-gray-700 overflow-hidden">
+        <Table>
+          <TableHeader className="bg-gray-800">
+            <TableRow className="border-gray-700 hover:bg-gray-800">
+              <TableHead className="text-gray-400">Post</TableHead>
+              <TableHead className="text-gray-400 hidden md:table-cell">Author</TableHead>
+              <TableHead className="text-gray-400 hidden lg:table-cell">Category</TableHead>
+              <TableHead className="text-gray-400">Published</TableHead>
+              <TableHead className="text-gray-400 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? <TableRow><TableCell colSpan={5} className="text-center text-gray-500 py-10">Loading…</TableCell></TableRow>
+              : posts.length === 0 ? <TableRow><TableCell colSpan={5} className="text-center text-gray-500 py-10">No posts yet.</TableCell></TableRow>
+              : posts.map(p => (
+                <TableRow key={p.id} className="border-gray-700 hover:bg-gray-800/50">
+                  <TableCell><p className="text-white font-medium text-sm">{p.title}</p><p className="text-gray-400 text-xs line-clamp-1">{p.excerpt}</p></TableCell>
+                  <TableCell className="hidden md:table-cell text-gray-300 text-sm">{p.author}</TableCell>
+                  <TableCell className="hidden lg:table-cell"><span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300">{p.category}</span></TableCell>
+                  <TableCell>{p.published ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4 text-gray-600" />}</TableCell>
+                  <TableCell className="text-right"><div className="flex items-center justify-end gap-2">
+                    <Button size="icon" variant="ghost" onClick={() => openEdit(p)} className="h-7 w-7 p-0 text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => del(p.id)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></Button>
+                  </div></TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+// ─ Careers Manager ────────────────────────────────────────────────────────────
+const CareersManager: React.FC<{ token: string }> = ({ token }) => {
+  const [jobs, setJobs] = useState<JobOpening[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<JobOpening | null>(null);
+  const [form, setForm] = useState({ ...BLANK_JOB });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const r = await fetch(`${API}/api/admin/careers`, { headers: authHeaders(token) }); const d = await r.json(); setJobs(d.data ?? []); } finally { setLoading(false); }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setEditing(null); setForm({ ...BLANK_JOB }); setShowForm(true); };
+  const openEdit = (j: JobOpening) => {
+    setEditing(j);
+    setForm({ title: j.title, department: j.department, location: j.location, type: j.type, description: j.description, requirements: j.requirements.join('\n'), active: j.active });
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.description.trim()) return;
+    setSaving(true);
+    const body = { ...form, requirements: form.requirements.split('\n').map(r => r.trim()).filter(Boolean) };
+    const url = editing ? `${API}/api/admin/careers/${editing.id}` : `${API}/api/admin/careers`;
+    await fetch(url, { method: editing ? 'PATCH' : 'POST', headers: authHeaders(token), body: JSON.stringify(body) });
+    setSaving(false); setShowForm(false); load();
+  };
+
+  const del = async (id: string) => {
+    if (!confirm('Delete this job?')) return;
+    await fetch(`${API}/api/admin/careers/${id}`, { method: 'DELETE', headers: authHeaders(token) }); load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <Button size="sm" onClick={openAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white"><Plus className="w-4 h-4 mr-1.5" /> Add Job</Button>
+        <Button size="sm" variant="outline" onClick={load} className="border-gray-600 text-gray-300"><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
+      </div>
+      {showForm && (
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-3">
+          <h3 className="text-white font-semibold">{editing ? 'Edit Job' : 'New Job Opening'}</h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2"><label className={labelCls}>Job Title *</label><input className={inputCls} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Real Estate Sales Agent" /></div>
+            <div><label className={labelCls}>Department</label><input className={inputCls} value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} placeholder="e.g. Sales" /></div>
+            <div><label className={labelCls}>Location</label><input className={inputCls} value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="e.g. Nairobi" /></div>
+            <div><label className={labelCls}>Type</label>
+              <select className={inputCls} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                <option value="full-time">Full-Time</option>
+                <option value="part-time">Part-Time</option>
+                <option value="contract">Contract</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 pt-5"><input type="checkbox" id="active" checked={form.active as boolean} onChange={e => setForm(f => ({ ...f, active: e.target.checked }))} className="w-4 h-4 accent-emerald-500" /><label htmlFor="active" className="text-sm text-gray-300">Active / Visible</label></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Description *</label><textarea className={inputCls} rows={4} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Role description..." /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>Requirements (one per line)</label><textarea className={inputCls} rows={5} value={form.requirements as string} onChange={e => setForm(f => ({ ...f, requirements: e.target.value }))} placeholder={"Minimum 2 years experience\nValid driving licence\n..."} /></div>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-700 text-white">{saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Job'}</Button>
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-3">
+        {loading ? <p className="text-gray-500 py-6 text-center">Loading…</p> : jobs.length === 0 ? <p className="text-gray-500 py-6 text-center">No jobs yet.</p> : jobs.map(job => (
+          <div key={job.id} className="bg-gray-900 border border-gray-700 rounded-xl p-4 flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-white font-medium text-sm">{job.title}</p>
+                {job.active ? <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-900/40 text-emerald-400">Active</span> : <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-500">Hidden</span>}
+              </div>
+              <p className="text-gray-400 text-xs mt-1">{job.department} · {job.location} · {job.type}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => openEdit(job)} className="h-7 w-7 p-0 text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></Button>
+              <Button size="icon" variant="ghost" onClick={() => del(job.id)} className="h-7 w-7 p-0 text-gray-400 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─ PagesTab ───────────────────────────────────────────────────────────────────
+const PagesTab: React.FC<{ token: string }> = ({ token }) => {
+  const [section, setSection] = useState<'faqs' | 'blog' | 'careers'>('faqs');
+  const sections = [
+    { id: 'faqs' as const, label: 'FAQs', icon: HelpCircle },
+    { id: 'blog' as const, label: 'Blog Posts', icon: BookOpen },
+    { id: 'careers' as const, label: 'Careers', icon: Briefcase },
+  ];
+  return (
+    <div className="space-y-6">
+      <div className="flex gap-2 flex-wrap">
+        {sections.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setSection(id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              section === id ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white border border-gray-700'
+            }`}
+          >
+            <Icon className="w-4 h-4" /> {label}
+          </button>
+        ))}
+      </div>
+      {section === 'faqs' && <FaqsManager token={token} />}
+      {section === 'blog' && <BlogManager token={token} />}
+      {section === 'careers' && <CareersManager token={token} />}
+    </div>
+  );
+};
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 const AdminDashboard: React.FC = () => {
@@ -1009,7 +1297,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="properties">
-          <TabsList className="bg-gray-800 border border-gray-700">
+          <TabsList className="bg-gray-800 border border-gray-700 flex-wrap h-auto gap-1">
             <TabsTrigger value="properties" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
               Properties <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.properties?.total ?? 0}</Badge>
             </TabsTrigger>
@@ -1021,6 +1309,9 @@ const AdminDashboard: React.FC = () => {
             </TabsTrigger>
             <TabsTrigger value="newsletter" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
               Newsletter <Badge className="ml-1.5 bg-gray-700 text-gray-300 text-xs">{stats?.newsletter.total ?? 0}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="pages" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-gray-400">
+              Pages
             </TabsTrigger>
           </TabsList>
 
@@ -1035,6 +1326,9 @@ const AdminDashboard: React.FC = () => {
           </TabsContent>
           <TabsContent value="newsletter" className="mt-6">
             <NewsletterTab token={session.access_token} />
+          </TabsContent>
+          <TabsContent value="pages" className="mt-6">
+            <PagesTab token={session.access_token} />
           </TabsContent>
         </Tabs>
       </main>

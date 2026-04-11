@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send } from 'lucide-react';
+import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send, Info, BookOpen, Briefcase, HelpCircle, Phone, MessageCircle, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNewsletterSubscribers } from '@/hooks/useNewsletterSubscribers';
 import { useToast } from '@/hooks/use-toast';
@@ -50,11 +50,11 @@ const Footer: React.FC = () => {
   ];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = [
-    { label: 'About Us', path: '/about' },
-    { label: 'Blog', path: '/blog' },
-    { label: 'Careers', path: '/careers' },
-    { label: 'FAQs', path: '/faqs' },
-    { label: 'Contact', path: '/#contact' },
+    { label: 'About Us', path: '/about', icon: Info },
+    { label: 'Blog', path: '/blog', icon: BookOpen },
+    { label: 'Careers', path: '/careers', icon: Briefcase },
+    { label: 'FAQs', path: '/faqs', icon: HelpCircle },
+    { label: 'Contact', path: '/contact', icon: MessageCircle },
   ];
 
   return (
@@ -156,10 +156,11 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
-                  <Link to={link.path} className="text-gray-400 hover:text-emerald-400 transition-colors">
-                    {link.label}
+              {quickLinks.map(({ label, path, icon: Icon }) => (
+                <li key={label}>
+                  <Link to={path} className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                    <Icon className="w-3.5 h-3.5 text-emerald-500 group-hover:text-emerald-400 flex-shrink-0" />
+                    {label}
                   </Link>
                 </li>
               ))}
@@ -170,11 +171,16 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-3 text-gray-400">
-              <li>Arcade House, 1st Floor, Nairobi, Kenya</li>
-              <li>
-                <a href="tel:+254725 604 549" className="hover:text-emerald-400 transition-colors">+254 725 604 549</a>
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <span>Arcade House, 1st Floor, Nairobi, Kenya</span>
               </li>
-              <li>
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <a href="tel:+254725604549" className="hover:text-emerald-400 transition-colors">+254 725 604 549</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 <a href="mailto:hemaprinhomes@gmail.com" className="hover:text-emerald-400 transition-colors">hemaprinhomes@gmail.com</a>
               </li>
             </ul>

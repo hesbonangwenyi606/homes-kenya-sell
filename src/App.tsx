@@ -9,6 +9,10 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 import AboutPage from "./pages/AboutPage";
+import FAQsPage from "./pages/FAQsPage";
+import BlogPage from "./pages/BlogPage";
+import CareersPage from "./pages/CareersPage";
+import ContactPage from "./pages/ContactPage";
 import ComingSoon from "./pages/ComingSoon";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
@@ -26,10 +30,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/blog" element={<ComingSoon title="Blog" />} />
-            <Route path="/careers" element={<ComingSoon title="Careers" />} />
-            <Route path="/faqs" element={<ComingSoon title="FAQs" />} />
-            <Route path="/contact" element={<ComingSoon title="Contact" />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/careers" element={<CareersPage />} />
+            <Route path="/faqs" element={<FAQsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy-policy" element={<ComingSoon title="Privacy Policy" />} />
             <Route path="/terms-of-service" element={<ComingSoon title="Terms of Service" />} />
             <Route path="/cookie-policy" element={<ComingSoon title="Cookie Policy" />} />

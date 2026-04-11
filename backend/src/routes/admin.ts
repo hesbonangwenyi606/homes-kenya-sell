@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
+import { v4 as uuid } from 'uuid';
 import db from '../lib/db';
 import { signAdminToken } from '../lib/jwtAuth';
 import { requireAdmin, AdminRequest } from '../middleware/adminAuth';
@@ -166,6 +167,115 @@ router.get('/newsletter', (req: AdminRequest, res: Response) => {
   if (status && status !== 'all') rows = rows.filter(r => r.status === status);
 
   res.json({ data: rows.slice((pageNum - 1) * limitNum, pageNum * limitNum), total: rows.length, page: pageNum, limit: limitNum });
+});
+
+// ── FAQs ──────────────────────────────────────────────────────────────────────
+const faqSchema = z.object({
+  question: z.string().min(1),
+  answer: z.string().min(1),
+  order: z.number().optional(),
+});
+
+router.get('/faqs', (_req: AdminRequest, res: Response) => {
+  res.json({ data: db.get('faq_items').orderBy('order', 'asc').value() });
+});
+
+router.post('/faqs', (req: AdminRequest, res: Response) => {
+  const parsed = faqSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  const all = db.get('faq_items').value();
+  const maxOrder = all.length > 0 ? Math.max(...all.map((i) => i.order ?? 0)) : 0;
+  const now = new Date().toISOString();
+  const item = { id: uuid(), ...parsed.data, order: parsed.data.order ?? maxOrder + 1, created_at: now, updated_at: now };
+  db.get('faq_items').push(item).write();
+  res.status(201).json({ data: item });
+});
+
+router.patch('/faqs/:id', (req: AdminRequest, res: Response) => {
+  const id = String(req.params.id);
+  const parsed = faqSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.get('faq_items').find((i) => i.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('faq_items').find((i) => i.id === id).value() });
+});
+
+router.delete('/faqs/:id', (req: AdminRequest, res: Response) => {
+  db.get('faq_items').remove((i) => i.id === String(req.params.id)).write();
+  res.status(204).send();
+});
+
+// ── Blog Posts ────────────────────────────────────────────────────────────────
+const blogSchema = z.object({
+  title: z.string().min(1),
+  excerpt: z.string().min(1),
+  content: z.string().min(1),
+  author: z.string().min(1),
+  category: z.string().min(1),
+  image: z.string().default(''),
+  published: z.boolean().default(true),
+});
+
+router.get('/blog', (_req: AdminRequest, res: Response) => {
+  res.json({ data: db.get('blog_posts').orderBy('created_at', 'desc').value() });
+});
+
+router.post('/blog', (req: AdminRequest, res: Response) => {
+  const parsed = blogSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data', details: parsed.error.errors }); return; }
+  const now = new Date().toISOString();
+  const post = { id: uuid(), ...parsed.data, created_at: now, updated_at: now };
+  db.get('blog_posts').push(post).write();
+  res.status(201).json({ data: post });
+});
+
+router.patch('/blog/:id', (req: AdminRequest, res: Response) => {
+  const id = String(req.params.id);
+  const parsed = blogSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.get('blog_posts').find((p) => p.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('blog_posts').find((p) => p.id === id).value() });
+});
+
+router.delete('/blog/:id', (req: AdminRequest, res: Response) => {
+  db.get('blog_posts').remove((p) => p.id === String(req.params.id)).write();
+  res.status(204).send();
+});
+
+// ── Job Openings ──────────────────────────────────────────────────────────────
+const jobSchema = z.object({
+  title: z.string().min(1),
+  department: z.string().min(1),
+  location: z.string().min(1),
+  type: z.enum(['full-time', 'part-time', 'contract']),
+  description: z.string().min(1),
+  requirements: z.array(z.string()).default([]),
+  active: z.boolean().default(true),
+});
+
+router.get('/careers', (_req: AdminRequest, res: Response) => {
+  res.json({ data: db.get('job_openings').orderBy('created_at', 'desc').value() });
+});
+
+router.post('/careers', (req: AdminRequest, res: Response) => {
+  const parsed = jobSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data', details: parsed.error.errors }); return; }
+  const now = new Date().toISOString();
+  const job = { id: uuid(), ...parsed.data, created_at: now, updated_at: now };
+  db.get('job_openings').push(job).write();
+  res.status(201).json({ data: job });
+});
+
+router.patch('/careers/:id', (req: AdminRequest, res: Response) => {
+  const id = String(req.params.id);
+  const parsed = jobSchema.partial().safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Invalid data' }); return; }
+  db.get('job_openings').find((j) => j.id === id).assign({ ...parsed.data, updated_at: new Date().toISOString() }).write();
+  res.json({ data: db.get('job_openings').find((j) => j.id === id).value() });
+});
+
+router.delete('/careers/:id', (req: AdminRequest, res: Response) => {
+  db.get('job_openings').remove((j) => j.id === String(req.params.id)).write();
+  res.status(204).send();
 });
 
 export default router;
