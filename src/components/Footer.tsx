@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send, Info, HelpCircle, Phone, MessageCircle, MapPin } from 'lucide-react';
+import { Home, Mail, Facebook, Twitter, Instagram, Linkedin, Send, Phone, MessageCircle, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNewsletterSubscribers } from '@/hooks/useNewsletterSubscribers';
 import { useToast } from '@/hooks/use-toast';
@@ -50,9 +50,9 @@ const Footer: React.FC = () => {
   ];
   const locations = ['Nairobi', 'Juja', 'Kiambu', 'Ruiru', 'Thika', 'Limuru'];
   const quickLinks = [
-    { label: 'About Us', path: '/about', icon: Info },
-    { label: 'FAQs', path: '/faqs', icon: HelpCircle },
-    { label: 'Contact', path: '/contact', icon: MessageCircle },
+    { label: 'About Us', path: '/about' },
+    { label: 'FAQs', path: '/faqs' },
+    { label: 'Contact', path: '/contact' },
   ];
 
   return (
